@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/api/dashboards")
+@CrossOrigin(origins = "http://localhost:4201")
 public class DashBoardServiceController {
 
     @Autowired
     private DashBoardService dashBoardService;
 
-    @GetMapping("/dashboards/getAll")
+    @GetMapping("/getAll")
     public DashBoardSearchRes getAll() {
         return dashBoardService.getAll();
     }
