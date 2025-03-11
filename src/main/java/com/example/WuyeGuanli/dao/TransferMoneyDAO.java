@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.example.WuyeGuanli.dto.TransferMoney;
 @Mapper
-public interface TransferMoneyDAO {
+public interface TransferMoneyDAO {//SQL語法
 
 	List<TransferMoney> getTransferMoneyUserDTO(); // 合表
 

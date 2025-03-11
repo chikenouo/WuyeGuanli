@@ -47,7 +47,7 @@ public class TransferMoneyService {
                 TransferMoney newTransferMoney = new TransferMoney();
                 newTransferMoney.setAccount(account);
                 newTransferMoney.setTransfer(0);
-                newTransferMoney.setBalance(0);
+                newTransferMoney.setBalance(0); // 初始餘額為0，不再隨機
                 newTransferMoney.setUpdateTime(LocalDateTime.now()); // 設定當前時間
                 
                 // 插入資料到transfer_money表
@@ -63,28 +63,73 @@ public class TransferMoneyService {
         }
     }
     
- // 根據帳號更新 transfer_money 資料
-    public String updateTransferMoney(TransferMoney transferMoney) {
+    /**
+     * 獲取用戶當前餘額
+     * 
+     * @param account 用戶帳號
+     * @return 當前餘額
+     */
+    public int getCurrentBalance(String account) {
+        TransferMoney existingTransferMoney = transferMoneyDAO.getTransferMoneyByAccount(account);
+        if (existingTransferMoney != null) {
+            return existingTransferMoney.getBalance();
+        }
+        return 0; // 如果帳戶不存在，返回0
+    }
+    
+    /**
+     * 根據操作類型和金額更新transfer_money資料
+     * 
+     * @param transferMoney 包含帳號、操作金額等信息
+     * @param operationType 操作類型：1-存款，2-提款，3-轉帳
+     * @return 操作結果訊息
+     */
+    public String updateTransferMoney(TransferMoney transferMoney, int operationType) {
         // 1. 先查詢該帳號的餘額
         TransferMoney existingTransferMoney = transferMoneyDAO.getTransferMoneyByAccount(transferMoney.getAccount());
         
         if (existingTransferMoney != null) {
             int currentBalance = existingTransferMoney.getBalance();
-            int transferAmount = transferMoney.getTransfer();
+            int amount = transferMoney.getTransfer();
+            int newBalance;
             
-            // 2. 檢查餘額是否足夠
-            if (currentBalance < transferAmount) {
-                return "餘額不足，無法進行轉帳";
+            // 2. 根據操作類型處理
+            switch (operationType) {
+                case 1: // 存款 - 增加餘額
+                    newBalance = currentBalance + amount;
+                    logger.info("存款操作: 帳號 {} 存入 {}, 原餘額 {}, 新餘額 {}", 
+                                transferMoney.getAccount(), amount, currentBalance, newBalance);
+                    break;
+                    
+                case 2: // 提款 - 減少餘額
+                    if (currentBalance < amount) {
+                        return "餘額不足，無法提款";
+                    }
+                    newBalance = currentBalance - amount;
+                    logger.info("提款操作: 帳號 {} 提取 {}, 原餘額 {}, 新餘額 {}", 
+                                transferMoney.getAccount(), amount, currentBalance, newBalance);
+                    break;
+                    
+                case 3: // 轉帳 - 減少餘額
+                    if (currentBalance < amount) {
+                        return "餘額不足，無法進行轉帳";
+                    }
+                    newBalance = currentBalance - amount;
+                    logger.info("轉帳操作: 帳號 {} 轉出 {}, 原餘額 {}, 新餘額 {}", 
+                                transferMoney.getAccount(), amount, currentBalance, newBalance);
+                    break;
+                    
+                default:
+                    return "不支援的操作類型";
             }
             
-            // 3. 計算新的餘額
-            int newBalance = currentBalance - transferAmount;
-            
-            // 4. 更新轉帳金額和餘額
+            // 3. 更新轉帳金額和餘額
             transferMoney.setBalance(newBalance);
+            transferMoney.setUpdateTime(LocalDateTime.now()); // 更新時間
             transferMoneyDAO.updateTransferMoney(transferMoney);
             
-            return "轉帳成功"; // 成功後回傳成功訊息
+            String operationName = (operationType == 1) ? "存款" : (operationType == 2) ? "提款" : "轉帳";
+            return operationName + "成功，當前餘額: " + newBalance; // 成功後回傳成功訊息和當前餘額
         } else {
             return "該帳戶不存在"; // 帳戶不存在的錯誤訊息
         }
