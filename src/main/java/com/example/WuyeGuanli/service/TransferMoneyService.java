@@ -2,10 +2,12 @@ package com.example.WuyeGuanli.service;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.WuyeGuanli.dao.TransferMoneyDAO;
 import com.example.WuyeGuanli.dto.TransferMoney;
@@ -58,6 +60,33 @@ public class TransferMoneyService {
         } catch (Exception e) {
             logger.error("處理用戶登入錢包時發生錯誤: {}", identityNumber, e);
             // 這裡我們只記錄錯誤但不拋出，以避免影響用戶登入流程
+        }
+    }
+    
+ // 根據帳號更新 transfer_money 資料
+    public String updateTransferMoney(TransferMoney transferMoney) {
+        // 1. 先查詢該帳號的餘額
+        TransferMoney existingTransferMoney = transferMoneyDAO.getTransferMoneyByAccount(transferMoney.getAccount());
+        
+        if (existingTransferMoney != null) {
+            int currentBalance = existingTransferMoney.getBalance();
+            int transferAmount = transferMoney.getTransfer();
+            
+            // 2. 檢查餘額是否足夠
+            if (currentBalance < transferAmount) {
+                return "餘額不足，無法進行轉帳";
+            }
+            
+            // 3. 計算新的餘額
+            int newBalance = currentBalance - transferAmount;
+            
+            // 4. 更新轉帳金額和餘額
+            transferMoney.setBalance(newBalance);
+            transferMoneyDAO.updateTransferMoney(transferMoney);
+            
+            return "轉帳成功"; // 成功後回傳成功訊息
+        } else {
+            return "該帳戶不存在"; // 帳戶不存在的錯誤訊息
         }
     }
 }

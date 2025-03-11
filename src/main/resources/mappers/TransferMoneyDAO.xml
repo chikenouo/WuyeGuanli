@@ -72,5 +72,15 @@
         WHERE
             tm.account = #{account}
     </select>
+    
+     <!-- 根據帳號更新 transfer_money 資料 -->
+    <update id="updateTransferMoney">
+        UPDATE transfer_money
+        SET 
+            transfer = #{transfer},
+            balance = #{balance},
+            update_time = NOW()  <!-- 更新為當前時間 -->
+        WHERE account = #{account}
+    </update>
 
 </mapper>

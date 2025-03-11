@@ -15,4 +15,7 @@ public interface TransferMoneyDAO {
 
 	// 根據帳號檢查是否已存在資料
 	TransferMoney getTransferMoneyByAccount(String account);
+	
+	// 根據帳號更新 transfer_money 資料
+	void updateTransferMoney(TransferMoney transferMoney);
 }
