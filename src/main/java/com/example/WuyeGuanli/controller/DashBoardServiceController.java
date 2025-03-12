@@ -13,7 +13,7 @@ public class DashBoardServiceController {
     @Autowired
     private DashBoardService dashBoardService;
 
-    @GetMapping("/getAll")
+    @GetMapping(value = "/getAll", produces = "application/json")
     public DashBoardSearchRes getAll() {
         return dashBoardService.getAll();
     }
