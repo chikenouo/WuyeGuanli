@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Collections;
+
 
 /**
  * UserController 負責定義用戶相關的 API 端點，
@@ -117,8 +119,9 @@ public class UserController {
             // 更新密碼
             user.setPassword(newPassword);
             userService.updateUser(user);
-            
-            return ResponseEntity.ok().body("密碼更新成功");
+
+            return ResponseEntity.ok(Collections.singletonMap("message", "密碼更新成功"));
+
         }
         return ResponseEntity.notFound().build();
     }
