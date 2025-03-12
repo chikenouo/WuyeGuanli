@@ -122,7 +122,7 @@ public class UserController {
 
             return ResponseEntity.ok(Collections.singletonMap("message", "密碼更新成功"));
 
-        }
+        }   
         return ResponseEntity.notFound().build();
     }
 
