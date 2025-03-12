@@ -364,7 +364,7 @@ public class TransferMoneyController {
 	// 以下匯款API
 
 	/**
-	 * 取得合併後的資金記錄列表API
+	 * 取得合併後的資金記錄列表API(所有) 可用
 	 */
 	@GetMapping("/money/records")
 	public ResponseEntity<?> getMoneyRecords(HttpServletRequest request) {
@@ -403,7 +403,7 @@ public class TransferMoneyController {
 	/**
 	 * 根據帳戶和金額查詢資金記錄API
 	 */
-	@GetMapping("/money/search")
+	@GetMapping("/money/search")//由對應帳號和金額查詢收款紀錄(目前沒用 條件不嚴謹)
 	public ResponseEntity<?> searchMoneyRecords(@RequestParam("account") String account,
 			@RequestParam("amount") int amount, HttpServletRequest request) {
 
@@ -492,7 +492,7 @@ public class TransferMoneyController {
 	/**
 	 * 取得特定帳戶的收款記錄API
 	 */
-	@GetMapping("/money/account")
+	@GetMapping("/money/account")//條件不嚴謹 暫時無用
 	public ResponseEntity<?> getAccountRecords(@RequestParam("account") String account, HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		Map<String, Object> response = new HashMap<>();

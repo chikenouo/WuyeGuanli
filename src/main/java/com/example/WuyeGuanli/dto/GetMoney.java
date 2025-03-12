@@ -23,18 +23,12 @@ public class GetMoney {
 		// TODO 自動產生的建構子 Stub
 	}
 
-
-
 	public String getSendMoneyAccount() {
 		return sendMoneyAccount;
 	}
-
-
-
 	public void setSendMoneyAccount(String sendMoneyAccount) {
 		this.sendMoneyAccount = sendMoneyAccount;
 	}
-
 
 
 	public String getAccount() {
