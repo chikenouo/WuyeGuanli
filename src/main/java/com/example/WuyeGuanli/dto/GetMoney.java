@@ -16,24 +16,26 @@ public class GetMoney {
 	private int receive;
 	private String remark;
 	private LocalDateTime timeOfReceivingMoney;
+	private String sendMoneyAccount;
 
 	public GetMoney() {
 		super();
 		// TODO 自動產生的建構子 Stub
 	}
 
-	public GetMoney(String account, int transfer, int balance, Integer id, String receiveMoneyAccount, int receive,
-			String remark, LocalDateTime timeOfReceivingMoney) {
-		super();
-		this.account = account;
-		this.transfer = transfer;
-		this.balance = balance;
-		this.id = id;
-		this.receiveMoneyAccount = receiveMoneyAccount;
-		this.receive = receive;
-		this.remark = remark;
-		this.timeOfReceivingMoney = timeOfReceivingMoney;
+
+
+	public String getSendMoneyAccount() {
+		return sendMoneyAccount;
 	}
+
+
+
+	public void setSendMoneyAccount(String sendMoneyAccount) {
+		this.sendMoneyAccount = sendMoneyAccount;
+	}
+
+
 
 	public String getAccount() {
 		return account;
@@ -97,6 +99,22 @@ public class GetMoney {
 
 	public void setTimeOfReceivingMoney(LocalDateTime timeOfReceivingMoney) {
 		this.timeOfReceivingMoney = timeOfReceivingMoney;
+	}
+
+
+
+	public GetMoney(String account, int transfer, int balance, Integer id, String receiveMoneyAccount, int receive,
+			String remark, LocalDateTime timeOfReceivingMoney, String sendMoneyAccount) {
+		super();
+		this.account = account;
+		this.transfer = transfer;
+		this.balance = balance;
+		this.id = id;
+		this.receiveMoneyAccount = receiveMoneyAccount;
+		this.receive = receive;
+		this.remark = remark;
+		this.timeOfReceivingMoney = timeOfReceivingMoney;
+		this.sendMoneyAccount = sendMoneyAccount;
 	}
 
 }

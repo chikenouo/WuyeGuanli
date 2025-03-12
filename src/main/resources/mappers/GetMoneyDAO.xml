@@ -68,12 +68,14 @@
         receive_money_account,
         receive,
         remark,
-        time_of_receiving_money
+        time_of_receiving_money,
+        send_money_account
     ) VALUES (
         #{receiveMoneyAccount},
         #{receive},
         #{remark},
-        #{timeOfReceivingMoney}
+        #{timeOfReceivingMoney},
+        #{sendMoneyAccount}
     )
     
     </insert>

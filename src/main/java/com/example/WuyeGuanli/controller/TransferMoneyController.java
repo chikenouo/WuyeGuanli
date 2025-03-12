@@ -26,6 +26,7 @@ import com.example.WuyeGuanli.entity.User;
 import com.example.WuyeGuanli.repository.UserRepository;
 import com.example.WuyeGuanli.service.AuthService;
 import com.example.WuyeGuanli.service.GetMoneyService;
+import com.example.WuyeGuanli.service.MoneyTransferService;
 import com.example.WuyeGuanli.service.TransferMoneyService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,6 +48,9 @@ public class TransferMoneyController {
 
 	@Autowired
 	private GetMoneyService getMoneyService;
+	
+	@Autowired
+	private MoneyTransferService moneyTransferService;
 
 	/**
 	 * 用戶登錄API 繞過AuthService中的角色限制 允許所有角色 (admin, landlord, tenant) 登入
@@ -303,7 +307,7 @@ public class TransferMoneyController {
 	/**
 	 * 轉帳API
 	 */
-	@PostMapping("/wallet/transfer")
+	@PostMapping("/wallet/transfer") //被/money/moneytransfer取代
 	public ResponseEntity<?> transfer(@RequestBody TransferMoney transferMoney) {
 		Map<String, Object> response = new HashMap<>();
 
@@ -326,12 +330,7 @@ public class TransferMoneyController {
 			response.put("message", "系統錯誤，請稍後再試");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
-//		要完成您的實施，您應該將傳輸邏輯 （operationType=3） 修改為：
-//
-//				檢查寄件者是否有足夠的餘額
-//				從匯款人的帳戶中扣除金額
-//				獲取收款人帳戶並將金額添加到他們的餘額中
-//				在事務中記錄兩個作
+
 	}
 
 	/**
@@ -445,41 +444,49 @@ public class TransferMoneyController {
 	/**
 	 * 新增收款記錄API
 	 */
-	@PostMapping("/money/add")
+	@PostMapping("/money/moneytransfer")
 	public ResponseEntity<?> addMoneyRecord(@RequestBody GetMoney getMoney, HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
-		Map<String, Object> response = new HashMap<>();
+	    HttpSession session = request.getSession(false);
+	    Map<String, Object> response = new HashMap<>();
 
-		try {
-			// 檢查用戶是否已登入
-			if (session == null || session.getAttribute("isLoggedIn") == null
-					|| !(Boolean) session.getAttribute("isLoggedIn")) {
+	    try {
+	        // 檢查用戶是否已登入
+	        if (session == null || session.getAttribute("isLoggedIn") == null
+	                || !(Boolean) session.getAttribute("isLoggedIn")) {
+	            logger.warn("未登入用戶嘗試新增收款記錄");
+	            response.put("success", false);
+	            response.put("message", "請先登入");
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	        }
 
-				logger.warn("未登入用戶嘗試新增收款記錄");
-				response.put("success", false);
-				response.put("message", "請先登入");
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-			}
+	        logger.info("處理轉帳請求 - 發送帳戶: {}, 接收帳戶: {}, 金額: {}", 
+	                   getMoney.getSendMoneyAccount(), getMoney.getReceiveMoneyAccount(), getMoney.getReceive());
+	        
+	        // 處理轉帳流程 (提款、存款並記錄)
+	        GetMoney newRecord = moneyTransferService.processTransfer(getMoney);
 
-			logger.info("新增收款記錄 - 收款帳戶: {}, 金額: {}", getMoney.getReceiveMoneyAccount(), getMoney.getReceive());
+	        logger.info("轉帳已成功完成，記錄ID: {}", newRecord.getId());
+	        
+	        response.put("success", true);
+	        response.put("message", "轉帳已成功完成");
+	        response.put("record", newRecord);
 
-			// 新增收款記錄
-			GetMoney newRecord = getMoneyService.addMoneyRecord(getMoney);
+	        return ResponseEntity.ok(response);
+	    } catch (RuntimeException e) {
+	        logger.warn("轉帳處理失敗: {}", e.getMessage());
+	        
+	        response.put("success", false);
+	        response.put("message", e.getMessage());
+	        
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	    } catch (Exception e) {
+	        logger.error("處理轉帳時發生錯誤", e);
 
-			logger.info("成功新增收款記錄，ID: {}", newRecord.getId());
-			response.put("success", true);
-			response.put("message", "收款記錄已成功建立");
-			response.put("record", newRecord);
+	        response.put("success", false);
+	        response.put("message", "系統錯誤，請稍後再試");
 
-			return ResponseEntity.ok(response);
-		} catch (Exception e) {
-			logger.error("新增收款記錄時發生錯誤", e);
-
-			response.put("success", false);
-			response.put("message", "系統錯誤，請稍後再試");
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
 
 	/**
