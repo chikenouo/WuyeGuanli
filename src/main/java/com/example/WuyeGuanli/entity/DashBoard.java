@@ -34,6 +34,4 @@ public class DashBoard {
 
     @Column(name = "img_url", length = 500)
     private String imgUrl;
-    
-    
 }

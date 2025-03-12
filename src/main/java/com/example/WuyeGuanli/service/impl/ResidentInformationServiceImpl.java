@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.example.WuyeGuanli.vo.BasicRes;
+import com.example.WuyeGuanli.vo.DashBoardSearchRes;
 import com.example.WuyeGuanli.vo.DeleteinformationReq;
+import com.example.WuyeGuanli.vo.ResidentInformationgetAllRes;
 import com.example.WuyeGuanli.vo.UpdateReq;
 import com.example.WuyeGuanli.vo.addinfoReq;
 import com.example.WuyeGuanli.dao.ResidentInformationDaoNMSL;
@@ -32,37 +34,40 @@ public class ResidentInformationServiceImpl implements ResidentInformationServic
 			System.out.println(req.getOwerPhone());
 			System.out.println(req.getOwerPhone().matches(patternString));
 			System.out.println("手機號碼有誤");
-			return null;
+			return new BasicRes(400, " Phone Erro!");
 		}
 		patternString = "[A-C]\\d{2}";
 		// 判斷門牌號碼
 		if (!req.getPartitionhousenumber().matches(patternString)) {
-			return null;
+			return new BasicRes(400, " getPartitionhousenumber Erro!");
 		}
 		// 判斷是否出租
 		if (req.isLease()) {
 			// 檢查租戶名字
-			if (!StringUtils.hasText(req.getResidentname())) {
-				return null;
+			if (!StringUtils.hasText(req.getResidentname())) 
+			{
+				System.out.println("租戶名字");
+				return new BasicRes(400, " Lease Name Erro!");
 			}
+			patternString = "\\d{8}";
 			// 檢查租戶手機
-			if (!StringUtils.hasText(req.getResidentphonenumber())
-					|| req.getPartitionhousenumber().matches(patternString)) {
-				return null;
+			if (!StringUtils.hasText(req.getResidentphonenumber())|| req.getPartitionhousenumber().matches(patternString)) 
+			{
+				System.out.println("租戶手機");
+				return new BasicRes(400, "Lease Phone Erro!");
 			}
 		}
 		residentDao.Add(req.getPartitionhousenumber(), req.getOwerName(), req.getOwerPhone(), req.isLease(),
 				req.getResidentname(), req.getResidentphonenumber());
-		return null;
+		return new BasicRes(200, "success");
 	}
 
 	@Override
-	public BasicRes selectAll() {
+	public ResidentInformationgetAllRes selectAll() {
 
-		residentDao.selectAll();
-		// List<Resident_Information> res = residentDao.selectAll();
-		// System.out.println(res.);
-		return null;
+		 List<Resident_Information> res = residentDao.selectAll();
+		 System.out.println(res);
+		 return new ResidentInformationgetAllRes(200, "success", res);
 	}
 
 	@Override
@@ -110,6 +115,7 @@ public class ResidentInformationServiceImpl implements ResidentInformationServic
 				return null;
 			}
 			// 檢查租戶手機
+			patternString = "\\d{8}";
 			if (!StringUtils.hasText(req.getResidentphonenumber())
 					|| req.getPartitionhousenumber().matches(patternString)) {
 				return null;
