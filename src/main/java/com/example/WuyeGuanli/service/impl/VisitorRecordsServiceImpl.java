@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.example.WuyeGuanli.vo.BasicRes;
+import com.example.WuyeGuanli.vo.ResidentInformationgetAllRes;
 import com.example.WuyeGuanli.vo.VisitorAddReq;
+import com.example.WuyeGuanli.vo.VisitorRecordgetAllres;
 import com.example.WuyeGuanli.vo.VisitorleaveReq;
 import com.example.WuyeGuanli.dao.ResidentInformationDaoNMSL;
 import com.example.WuyeGuanli.dao.VisitorRecordsDao;
@@ -47,24 +49,24 @@ public class VisitorRecordsServiceImpl implements VisitorRecordsService {
 		}
 		VisitorStr = req.getVisitors().substring(4);
 		
-		if (!resident_Information.isLease()) 
-		{
-			
-			if (resident_Information.getOwerName().equals(req.getVisitorName()))
-			{
-				
-				System.out.println("查無此人");
-				return null;
-			}
-		}
-		else 
-		{
-			if (!resident_Information.getOwerName().equals(req.getVisitorName()))
-			{
-				System.out.println("查無此人");
-				return null;
-			}
-		}
+//		if (!resident_Information.isLease()) 
+//		{
+//			
+//			if (resident_Information.getOwerName().equals(req.getVisitorName()))
+//			{
+//				
+//				System.out.println("查無此人");
+//				return null;
+//			}
+//		}
+//		else 
+//		{
+//			if (!resident_Information.getOwerName().equals(req.getVisitorName()))
+//			{
+//				System.out.println("查無此人");
+//				return null;
+//			}
+//		}
 		
 		System.out.println("成功");
 		visDao.Add(req.getVisitorName(),req.getVisitorPhone() ,req.getVisitorReason() , req.getVisitors());
@@ -87,13 +89,13 @@ public class VisitorRecordsServiceImpl implements VisitorRecordsService {
 	}
 
 	@Override
-	public BasicRes getAll() 
-	{
+	public VisitorRecordgetAllres getAll() {
 		List<VisitorRecords> resList = visDao.gitAll();
 		
 		System.out.println(resList);
 		// TODO Auto-generated method stub
-		return null;
+		 return new VisitorRecordgetAllres(200, "success", resList);
 	}
+
 
 }

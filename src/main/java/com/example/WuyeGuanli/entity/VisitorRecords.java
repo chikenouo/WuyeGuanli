@@ -1,5 +1,7 @@
 package com.example.WuyeGuanli.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,38 +33,51 @@ public class VisitorRecords {
 	private String visitorReason;
 	@Column(name = "Visitors")
 	private String Visitors;
-
+	@Column(name = "visitor_time")
+	private LocalDateTime visitorTime;
+	@Column(name = "out_time")
+	private LocalDateTime outTime;
+	@Column(name = "is_out_visitors")
+	private boolean isOutVisitors;
 	public VisitorRecords() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	public VisitorRecords(int ai, String visitorName, String visitorPhone, String visitorReason, String visitors) {
+	public VisitorRecords(int ai, String visitorName, String visitorPhone, String visitorReason, String visitors,
+			LocalDateTime visitorTime, LocalDateTime outTime, boolean isOutVisitors) {
 		super();
 		this.ai = ai;
 		this.visitorName = visitorName;
 		this.visitorPhone = visitorPhone;
 		this.visitorReason = visitorReason;
 		Visitors = visitors;
+		this.visitorTime = visitorTime;
+		this.outTime = outTime;
+		this.isOutVisitors = isOutVisitors;
 	}
-
 	public int getAi() {
 		return ai;
 	}
-
 	public String getVisitorName() {
 		return visitorName;
 	}
-
 	public String getVisitorPhone() {
 		return visitorPhone;
 	}
-
 	public String getVisitorReason() {
 		return visitorReason;
 	}
-
 	public String getVisitors() {
 		return Visitors;
 	}
+	public LocalDateTime getVisitorTime() {
+		return visitorTime;
+	}
+	public LocalDateTime getOutTime() {
+		return outTime;
+	}
+	public boolean isOutVisitors() {
+		return isOutVisitors;
+	}
+	
 }

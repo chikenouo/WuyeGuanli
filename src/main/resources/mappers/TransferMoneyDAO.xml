@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 如果不會自動抓就 上方window>preference>找到XML(WWD)>第一個打勾 -->
+<!-- mapper 標籤: 用來定義操作資料庫方法的 SQL 語句 -->
+<!-- namespace: 用來綁定特定 Dao 介面 -->
+
+<mapper namespace="com.example.WuyeGuanli.dao.TransferMoneyDAO">
+
+
+	<!-- id自己取名 ， type是路徑 -->
+	<!-- resultMap 標籤: 用於欄位名稱與 DTO 屬性變數名稱間的映射(mapping)；一個 mapper 標籤可以有多個不同的 
+		resultMap -->
+	<!-- resultMap 標籤中的 id: 此 resultMap 的唯一標識 -->
+	<!-- resultMap 標籤中的 type: 指定裝載資料用的 DTO -->
+	<resultMap id="TransferMoneymergeusers"
+		type="com.example.WuyeGuanli.dto.TransferMoney">
+		<!-- id 標籤: 用來標示主鍵，用於主鍵欄位和變數名稱的映射 -->
+		<!-- property: PersonInfo2 中的屬性變數名稱 -->
+		<!-- column: 資料表的欄位名稱 -->
+        <id property="account" column="account" />
+
+		<!-- result 標籤: 用在一般欄位與 DTO 變數名稱的映射 -->
+		<result property="transfer" column="transfer" />
+		<result property="balance" column="balance" />
+		<result property="updateTime" column="update_time" />
+		<result property="identityNumber" column="identity_number" />
+		<result property="password" column="password" />
+
+	</resultMap>
+	<!-- select 標籤中的 resultMap: select 的結果要映射哪個 resultMap 中 -->
+	<!-- resultMap 後面的字串就是上面 resultMap 標籤中，id 後面的字串 -->
+	<select id="getTransferMoneyUserDTO"
+		resultMap="TransferMoneymergeusers">
+		SELECT
+		tm.account,
+		tm.transfer,
+		tm.balance,
+		tm.update_time,
+		u.identity_number,
+		u.password
+		FROM
+		transfer_money tm
+		JOIN
+		users u
+		ON
+		u.identity_number = SUBSTRING_INDEX(tm.account, '$', 1)
+
+	</select>
+
+	 <insert id="insertTransferMoney"
+    parameterType="com.example.WuyeGuanli.dto.TransferMoney">
+        INSERT INTO transfer_money (account, transfer, balance, update_time)
+        VALUES (#{account}, #{transfer}, #{balance}, #{updateTime});
+    </insert>
+    
+    <select id="getTransferMoneyByAccount" parameterType="string" resultMap="TransferMoneymergeusers">
+        SELECT
+            tm.account,
+            tm.transfer,
+            tm.balance,
+            tm.update_time,
+            u.identity_number,
+            u.password
+        FROM
+            transfer_money tm
+        LEFT JOIN
+            users u
+        ON
+            u.identity_number = SUBSTRING_INDEX(tm.account, '$', 1)
+        WHERE
+            tm.account = #{account}
+    </select>
+    
+     <!-- 根據帳號更新 transfer_money 資料 -->
+    <update id="updateTransferMoney">
+        UPDATE transfer_money
+        SET 
+            transfer = #{transfer},
+            balance = #{balance},
+            update_time = NOW()  <!-- 更新為當前時間 -->
+        WHERE account = #{account}
+    </update>
+
+</mapper>
