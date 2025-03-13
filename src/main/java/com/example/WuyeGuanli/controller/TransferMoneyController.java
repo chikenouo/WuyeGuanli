@@ -404,7 +404,7 @@ public class TransferMoneyController {
 
 	
 	
-	@GetMapping("/money/searchreceiveacc")  // 由對應'收款'帳號查詢收款紀錄
+	@GetMapping("/money/searchreceiveacc")  // 由對應'收款'帳號查詢收款紀錄 102420484096
 	public ResponseEntity<?> searchMoneyRecords(@RequestParam("receive_money_account") String receiveMoneyAccount, HttpServletRequest request) {
 	    HttpSession session = request.getSession(false);
 	    Map<String, Object> response = new HashMap<>();
@@ -420,7 +420,7 @@ public class TransferMoneyController {
 	        }
 
 	        // 查詢符合條件的資金記錄
-	        List<MoneyAccount> records = getMoneyService.getMoneyRecordsByReceiveAccount(receiveMoneyAccount);
+	        List<GetMoney> records = getMoneyService.getMoneyByReceiveAccount(receiveMoneyAccount);
 	        
 	        // 如果沒有查到記錄，回應提示
 	        if (records.isEmpty()) {

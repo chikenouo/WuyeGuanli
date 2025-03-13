@@ -21,7 +21,7 @@ public interface GetMoneyDAO {// SQL語法
 	 * @param id 記錄ID
 	 * @return 收款記錄
 	 */
-	public GetMoney getMoneyById(@Param("id") Long id);
+	public GetMoney getMoneyById(@Param("id") Long id); //沒用
 
 	
 	/**
@@ -31,9 +31,9 @@ public interface GetMoneyDAO {// SQL語法
 	 * @param amount  收款金額
 	 * @return 收款記錄列表
 	 */
-	public List<GetMoney> findByAccountAndAmount(@Param("account") String account, @Param("amount") int amount);
+	public List<GetMoney> findByAccountAndAmount(@Param("account") String account, @Param("amount") int amount);//沒用
 
-	//不在這使用
+	//查102420484096
 	public List<GetMoney> getMoneyByReceiveAccount(@Param("account") String account);
 
 }

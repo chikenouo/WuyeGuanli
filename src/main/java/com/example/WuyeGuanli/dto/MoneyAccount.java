@@ -2,7 +2,7 @@ package com.example.WuyeGuanli.dto;
 
 import java.time.LocalDateTime;
 
-public class MoneyAccount {
+public class MoneyAccount {//已經用不到 跟getmoney一樣
 
 	private String receiveMoneyAccount; //收款帳戶
     private int receive;

@@ -107,13 +107,13 @@ public class GetMoneyService {
 	 * @param account 收款帳戶
 	 * @return 該帳戶的所有收款記錄
 	 */
-	public List<MoneyAccount> getMoneyRecordsByReceiveAccount(String receiveMoneyAccount) {
+	public List<GetMoney> getMoneyByReceiveAccount(String receiveMoneyAccount) {
         logger.debug("SQL查詢參數: receive_money_account={}, 當前日期={}", receiveMoneyAccount, new Date());
 
 
 	    try {
 	        // 優先使用DAO中的直接查詢方法
-	        List<MoneyAccount> records = moneyAccountDAO.getMoneyByReceiveAccount(receiveMoneyAccount);
+	        List<GetMoney> records = getMoneyDAO.getMoneyByReceiveAccount(receiveMoneyAccount);
 	        logger.debug("查詢結果筆數: {}", records.size());
 	        if (records == null || records.isEmpty()) {
 	            logger.info("未查詢到帳戶 {} 的收款記錄", receiveMoneyAccount);

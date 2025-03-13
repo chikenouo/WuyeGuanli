@@ -22,17 +22,13 @@
 		<id property="id" column="id" />
 
 		<!-- result 標籤: 用在一般欄位與 DTO 變數名稱的映射 -->
-		<result property="receiveMoneyAccount"
-			column="receive_money_account" />
+		<result property="receiveMoneyAccount" column="receive_money_account" />
 		<result property="receive" column="receive" />
 		<result property="remark" column="remark" />
-		<result property="timeOfReceivingMoney"
-			column="time_of_receiving_money" />
+		<result property="timeOfReceivingMoney" column="time_of_receiving_money" />
 		<result property="sendMoneyAccount" column="send_money_account" />
-		<result property="account" column="account" />
-		<result property="transfer" column="transfer" />
-		<result property="balance" column="balance" />
-
+		<result property="addressRemark" column="address_remark"/> <!--  確保映射 -->
+		<result property="feeforRemark" column="feefor_remark"/> <!--  確保映射 -->
 	</resultMap>
 	<!-- select 標籤中的 resultMap: select 的結果要映射哪個 resultMap 中 -->
 	<!-- resultMap 後面的字串就是上面 resultMap 標籤中，id 後面的字串 -->
@@ -46,10 +42,16 @@
 		gm.receive,
 		gm.remark,
 		gm.time_of_receiving_money,
-		gm.send_money_account
+		gm.send_money_account,
+
+	 	SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',-1) AS address_remark,
+ 		
+ 		SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^',2), '^', -1) AS feefor_remark
+ 		
+ 		<!--+otherr-->
 
 		FROM get_money gm
-
+		
 		ORDER BY
 		gm.time_of_receiving_money DESC
 
@@ -77,6 +79,8 @@
 	</insert>
 
 	<!-- 根據ID獲取收款記錄(沒用) -->
+	<!--沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用-->
+
 	<select id="getMoneyById"
 		resultType="com.example.WuyeGuanli.dto.GetMoney">
 		SELECT
@@ -91,30 +95,34 @@
 		id = #{id}
 	</select>
 
-	<!-- 根據收款帳號獲取收款記錄，加入JOIN查詢以獲取餘額信息 -->
+	<!-- 根據收款帳號獲取收款記錄，加入JOIN查詢以獲取餘額信息 查102420484096-->
 	<select id="getMoneyByReceiveAccount"
 		resultType="com.example.WuyeGuanli.dto.GetMoney">
 		SELECT
 		 gm.receive_money_account AS receiveMoneyAccount,
 		 gm.receive,
-		 SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#', -1) AS address_remark,
-		 SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^', 2), '^', -1) AS
-		 feefor_remark,
-		 SUBSTRING(gm.remark, LOCATE('^', gm.remark, LOCATE('^', gm.remark) + 2) + 2) AS
-		 other_remark,
 		 gm.time_of_receiving_money AS timeOfReceivingMoney,
+		 
+	 	SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',-1) AS address_remark,
+	 	
+	 	SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^',2), '^', -1) AS feefor_remark,
+	 	
+	 	 		<!--+otherr-->
+
+		 
+		 gm.remark,
 		 gm.send_money_account AS sendMoneyAccount
 		FROM
 		 get_money gm
 		WHERE
 		 gm.receive_money_account = #{account}
-		AND gm.remark LIKE '%#%'
 		AND gm.time_of_receiving_money > CURDATE() - INTERVAL 365 DAY
 		ORDER BY
 		 gm.time_of_receiving_money DESC
 	</select>
 
 	<!-- 根據收款帳號和金額獲取收款記錄，同樣加入JOIN查詢 -->
+	<!--沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用沒用-->
 	<select id="findByAccountAndAmount"
 		resultType="com.example.WuyeGuanli.dto.GetMoney">
 		SELECT
@@ -124,6 +132,7 @@
 		gm.id,
 		gm.receive_money_account AS receiveMoneyAccount,
 		gm.receive,
+	
 		gm.remark,
 		gm.time_of_receiving_money AS timeOfReceivingMoney
 		FROM
