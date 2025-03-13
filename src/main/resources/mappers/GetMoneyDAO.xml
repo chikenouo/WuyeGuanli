@@ -26,35 +26,29 @@
 		<result property="receive" column="receive" />
 		<result property="remark" column="remark" />
 		<result property="timeOfReceivingMoney" column="time_of_receiving_money" />
+		<result property="sendMoneyAccount" column="send_money_account" />
 		<result property="account" column="account" />
 		<result property="transfer" column="transfer" />
 		<result property="balance" column="balance" />
-
+		
 	</resultMap>
 	<!-- select 標籤中的 resultMap: select 的結果要映射哪個 resultMap 中 -->
 	<!-- resultMap 後面的字串就是上面 resultMap 標籤中，id 後面的字串 -->
 	<!--select id = DAO 方法名-->
 	<select id="moneyMerger"
 		resultMap="GetMoneymergeTransferMoney">
+		<!-- 獲得GetMoney表全部資訊-->
 	SELECT
-		tm.account,
-		tm.transfer,
-		tm.balance,
 		
 		gm.id,
 		gm.receive_money_account,
 		gm.receive,
 		gm.remark,
-		gm.time_of_receiving_money
+		gm.time_of_receiving_money,
+		gm.send_money_account
 		
-	FROM
-		transfer_money tm
-	JOIN
-		get_money gm
-	ON
-		gm.receive_money_account = tm.account
-	AND
-  		gm.receive = tm.transfer
+	FROM get_money gm
+   
   	ORDER BY 
         gm.time_of_receiving_money DESC
 
@@ -105,6 +99,7 @@
             gm.receive, 
             gm.remark, 
             gm.time_of_receiving_money AS timeOfReceivingMoney
+           
         FROM 
             transfer_money tm 
         JOIN 
@@ -138,7 +133,7 @@
             AND gm.receive = tm.transfer
         WHERE 
             gm.receive_money_account = #{account}
-            AND gm.receive = #{amount}
+            AND gm.receive = #{receive}
         ORDER BY 
             gm.time_of_receiving_money DESC
     </select>
