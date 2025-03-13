@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.Collections;
 
-
 /**
  * UserController 負責定義用戶相關的 API 端點，
  * 包括創建、查詢、更新、刪除以及查詢房東對應房客等操作。
@@ -37,10 +36,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    
+
     // 頭像存儲目錄
     private final String AVATAR_UPLOAD_DIR = "src/main/resources/static/avatars";
-    
+
     @PostConstruct
     public void init() {
         // 創建頭像存儲目錄
@@ -110,19 +109,19 @@ public class UserController {
             User user = userOpt.get();
             String currentPassword = passwordData.get("currentPassword");
             String newPassword = passwordData.get("newPassword");
-            
+
             // 驗證當前密碼是否正確
             if (!user.getPassword().equals(currentPassword)) {
                 return ResponseEntity.badRequest().body("當前密碼不正確");
             }
-            
+
             // 更新密碼
             user.setPassword(newPassword);
             userService.updateUser(user);
 
             return ResponseEntity.ok(Collections.singletonMap("message", "密碼更新成功"));
 
-        }   
+        }
         return ResponseEntity.notFound().build();
     }
 
@@ -158,34 +157,41 @@ public class UserController {
         }
 
         User user = userOpt.get();
-        
+
         try {
             // 刪除舊頭像（如果存在）
             if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-                File oldAvatar = new File(AVATAR_UPLOAD_DIR + "/" + user.getAvatar());
+                File oldAvatar = new File(AVATAR_UPLOAD_DIR, user.getAvatar());
                 if (oldAvatar.exists()) {
                     oldAvatar.delete();
                 }
             }
 
-            // 生成唯一文件名
-            String fileName = id + "_" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path targetLocation = Paths.get(AVATAR_UPLOAD_DIR + "/" + fileName);
-            
+            // 獲取文件擴展名
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            // 生成新的文件名
+            String fileName = id + "_" + UUID.randomUUID().toString() + extension;
+            Path targetLocation = Paths.get(AVATAR_UPLOAD_DIR).resolve(fileName);
+
             // 保存文件
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            
+
             // 更新用戶頭像路徑
             user.setAvatar(fileName);
             userService.updateUser(user);
-            
+
             return ResponseEntity.ok().body(Map.of(
-                "message", "Avatar uploaded successfully",
-                "avatarPath", fileName
+                    "message", "頭像上傳成功",
+                    "avatarPath", fileName
             ));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to upload avatar: " + e.getMessage());
+                    .body("頭像上傳失敗: " + e.getMessage());
         }
     }
 
@@ -203,17 +209,20 @@ public class UserController {
 
         User user = userOpt.get();
         String avatarFileName = user.getAvatar();
-        
+
         try {
+            // 構建文件路徑
+            Path avatarPath = Paths.get(AVATAR_UPLOAD_DIR).resolve(avatarFileName);
+            File avatarFile = avatarPath.toFile();
+
             // 檢查文件是否存在
-            File avatarFile = new File(AVATAR_UPLOAD_DIR + "/" + avatarFileName);
             if (!avatarFile.exists()) {
                 return ResponseEntity.notFound().build();
             }
-            
+
             // 讀取文件內容
-            byte[] imageData = Files.readAllBytes(avatarFile.toPath());
-            
+            byte[] imageData = Files.readAllBytes(avatarPath);
+
             // 根據文件擴展名設置適當的 MediaType
             MediaType mediaType = MediaType.IMAGE_JPEG;
             if (avatarFileName.toLowerCase().endsWith(".png")) {
@@ -221,13 +230,13 @@ public class UserController {
             } else if (avatarFileName.toLowerCase().endsWith(".gif")) {
                 mediaType = MediaType.IMAGE_GIF;
             }
-            
+
             return ResponseEntity.ok()
                     .contentType(mediaType)
                     .body(imageData);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to retrieve avatar: " + e.getMessage());
+                    .body("無法獲取頭像: " + e.getMessage());
         }
     }
 }
