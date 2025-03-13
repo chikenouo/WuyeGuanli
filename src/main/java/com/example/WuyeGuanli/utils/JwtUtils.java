@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 public class JwtUtils {
     private static final String SECRET_KEY = "aXRoZWltYQ=="; // 秘鑰
-    private static final long EXPIRATION_TIME = 12 * 60 * 60 * 1000; // 12小時
+    private static final long EXPIRATION_TIME = 3600000; // 1小時
 
     /**
      * 生成JWT令牌

@@ -17,20 +17,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // 配置 for http://localhost:4200 (寬鬆策略)
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4200")
+                .allowedOrigins("http://localhost:4200", "http://localhost:4201")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
-
-        // 配置 for http://localhost:4201 (嚴格策略)
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4201")
-                .allowedMethods("GET","POST","OPTIONS")
-                .allowedHeaders("Content-Type", "token") // 只允許特定頭部
-                .allowCredentials(true)
+                .allowedHeaders("Content-Type", "Authorization")
+                .allowCredentials(false)
                 .maxAge(3600);
     }
 
@@ -38,16 +29,14 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/api/residentLogin", "/resources/**", "/avatars/**", "/api/img/**");
+                .excludePathPatterns("http://localhost:4200/api/auth/login","/api/residentLogin","/resources/**", "/avatars/**", "/api/img/**", "/**/*.html", "/**/*.js", "/**/*.css", "/favicon.ico", "/error");
+                // 一定要排除登入，不然媽的還沒登入哪來令牌啦
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**")
-                .addResourceLocations("classpath:/");
-        registry.addResourceHandler("/avatars/**")
-                .addResourceLocations("classpath:/static/avatars/");
-        registry.addResourceHandler("/api/img/**")
-                .addResourceLocations("file:src/main/resources/img/");
+        registry.addResourceHandler("/resources/**").addResourceLocations("classpath:/");
+        registry.addResourceHandler("/avatars/**").addResourceLocations("classpath:/static/avatars/");
+        registry.addResourceHandler("/api/img/**").addResourceLocations("classpath:/static/img/");
     }
 }

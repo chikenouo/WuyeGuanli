@@ -1,14 +1,22 @@
 package com.example.WuyeGuanli.interceptor;
 
 import com.example.WuyeGuanli.utils.JwtUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Component
 public class TokenInterceptor implements HandlerInterceptor {
+
     private final JwtUtils jwtUtils;
+    private static final Logger logger = LoggerFactory.getLogger(TokenInterceptor.class);
 
     public TokenInterceptor(JwtUtils jwtUtils) {
         this.jwtUtils = jwtUtils;
@@ -16,41 +24,48 @@ public class TokenInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 檢查是否為 OPTIONS 預檢請求，直接放行
+        // 檢查Origin或Referer，如果來自4200則允許通過
+        String origin = request.getHeader("Origin");
+        if (origin != null && origin.equals("http://localhost:4200")) {
+            return true; // 直接放行來自4200的請求
+        }
+
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
             return true;
         }
 
-        // 檢查請求來源
-        String origin = request.getHeader("Origin");
-        if (origin == null || !origin.equals("http://localhost:4201")) {
-            return true; // 非 4201 請求，放行
+        String token = request.getHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
         }
 
-        // 獲取請求頭中的 token
-        String token = request.getHeader("token");
-
-        // 判斷 token 是否存在
         if (token == null || token.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("{\"code\": 0, \"msg\": \"請提供有效的令牌\"}");
-            return false;
+            return returnError(response, "請提供有效的令牌");
         }
 
-        // 驗證 token
         try {
+            if (jwtUtils == null){
+                throw new Exception("jwtUtils is null");
+            }
             jwtUtils.parseToken(token);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("{\"code\": 0, \"msg\": \"令牌無效\"}");
-            return false;
+            logger.error("Token validation failed", e);
+            return returnError(response, "令牌無效");
         }
 
         return true;
+    }
+
+    private boolean returnError(HttpServletResponse response, String message) throws Exception{
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        Map<String, Object> error = new HashMap<>();
+        error.put("code", 0);
+        error.put("msg", message);
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(error));
+        return false;
     }
 }
