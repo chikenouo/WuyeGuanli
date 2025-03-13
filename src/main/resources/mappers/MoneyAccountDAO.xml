@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.WuyeGuanli.dao.GetMoneyDAO">
+
+	<!-- resultMap: 用於欄位名稱與 DTO 屬性變數名稱間的映射 -->
+	<resultMap id="GetMoneyFromAccount"
+		type="com.example.WuyeGuanli.dto.MoneyAccount">
+		<id property="id" column="id" />
+		<result property="receiveMoneyAccount"
+			column="receive_money_account" />
+		<result property="addressRemark" column="address_remark" />
+		<result property="feeForRemark" column="feefor_remark" />
+		<result property="remark" column="remark" />
+		<result property="otherRemark" column="other_remark" />
+		<result property="timeOfReceivingMoney"
+			column="time_of_receiving_money" />
+		<result property="sendMoneyAccount" column="send_money_account" />
+		<result property="receive" column="receive" />
+	</resultMap>
+
+	<!-- 根據收款帳號獲取收款記錄 -->
+	<select id="getMoneyByReceiveAccount"
+		resultMap="GetMoneyFromAccount">
+		SELECT
+		gm.receive_money_account,
+		gm.receive,
+		gm.remark,
+		gm.time_of_receiving_money,
+		gm.send_money_account
+		
+		FROM get_money gm
+		WHERE gm.receive_money_account = #{account}
+		AND gm.time_of_receiving_money > CURDATE() - INTERVAL 365 DAY
+		ORDER BY gm.time_of_receiving_money DESC
+	</select>
+
+	<!-- 根據匯款帳號獲取記錄 -->
+	<select id="getMoneyBySendReceiveAccount"
+		resultType="com.example.WuyeGuanli.dto.MoneyAccount">
+		SELECT
+		gm.receive_money_account AS receiveMoneyAccount,
+		gm.receive,
+		SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',
+		-1) AS address_remark,
+		SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^',
+		2), '^', -1) AS
+		feefor_remark,
+		SUBSTRING(gm.remark, LOCATE('^',
+		gm.remark, LOCATE('^', gm.remark) + 2) + 2) AS
+		other_remark,
+		gm.time_of_receiving_money AS timeOfReceivingMoney,
+		gm.send_money_account AS sendMoneyAccount
+		FROM get_money gm
+		WHERE
+		gm.send_money_account = #{account}
+		AND gm.remark LIKE '%#%'
+		
+		ORDER BY
+		gm.time_of_receiving_money DESC
+	</select>
+
+</mapper>

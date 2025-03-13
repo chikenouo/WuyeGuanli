@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.WuyeGuanli.dto.GetMoney;
 import com.example.WuyeGuanli.dto.LoginRequest;
 import com.example.WuyeGuanli.dto.LoginResponse;
+import com.example.WuyeGuanli.dto.MoneyAccount;
 import com.example.WuyeGuanli.dto.TransferMoney;
 import com.example.WuyeGuanli.entity.Role;
 import com.example.WuyeGuanli.entity.User;
@@ -51,7 +52,8 @@ public class TransferMoneyController {
 	
 	@Autowired
 	private MoneyTransferService moneyTransferService;
-
+	
+	
 	/**
 	 * 用戶登錄API 繞過AuthService中的角色限制 允許所有角色 (admin, landlord, tenant) 登入
 	 */
@@ -361,12 +363,12 @@ public class TransferMoneyController {
 		}
 	}
 
-	// 以下匯款API
+	// 以下匯款API (getMoney+moneyAccount)
 
 	/**
 	 * 取得合併後的資金記錄列表API(所有) 可用
 	 */
-	@GetMapping("/money/records")
+	@GetMapping("/money/records") //全查
 	public ResponseEntity<?> getMoneyRecords(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		Map<String, Object> response = new HashMap<>();
@@ -400,46 +402,50 @@ public class TransferMoneyController {
 		}
 	}
 
-	/**
-	 * 根據帳戶和金額查詢資金記錄API
-	 */
-	@GetMapping("/money/search")//由對應帳號和金額查詢收款紀錄(目前沒用 條件不嚴謹)
-	public ResponseEntity<?> searchMoneyRecords(@RequestParam("account") String account,
-			@RequestParam("amount") int amount, HttpServletRequest request) {
+	
+	
+	@GetMapping("/money/searchreceiveacc")  // 由對應'收款'帳號查詢收款紀錄
+	public ResponseEntity<?> searchMoneyRecords(@RequestParam("receive_money_account") String receiveMoneyAccount, HttpServletRequest request) {
+	    HttpSession session = request.getSession(false);
+	    Map<String, Object> response = new HashMap<>();
 
-		HttpSession session = request.getSession(false);
-		Map<String, Object> response = new HashMap<>();
+	    try {
+	        // 檢查用戶是否已登入
+	        if (session == null || session.getAttribute("isLoggedIn") == null
+	                || !(Boolean) session.getAttribute("isLoggedIn")) {
+	            logger.warn("未登入用戶嘗試搜索資金記錄");
+	            response.put("success", false);
+	            response.put("message", "請先登入");
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	        }
 
-		try {
-			// 檢查用戶是否已登入
-			if (session == null || session.getAttribute("isLoggedIn") == null
-					|| !(Boolean) session.getAttribute("isLoggedIn")) {
+	        // 查詢符合條件的資金記錄
+	        List<MoneyAccount> records = getMoneyService.getMoneyRecordsByReceiveAccount(receiveMoneyAccount);
+	        
+	        // 如果沒有查到記錄，回應提示
+	        if (records.isEmpty()) {
+	            logger.info("未找到符合條件的資金記錄，帳戶：{}", receiveMoneyAccount);
+	            response.put("success", true);
+	            response.put("message", "無符合條件的資金記錄");
+	            return ResponseEntity.ok(response);
+	        }
 
-				logger.warn("未登入用戶嘗試搜索資金記錄");
-				response.put("success", false);
-				response.put("message", "請先登入");
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-			}
+	        // 成功找到記錄，輸出結果數量
+	        logger.info("搜索到 {} 筆符合條件的資金記錄", records.size());
+	        response.put("success", true);
+	        response.put("records", records);  // 可以將這裡的 records 转换为适合前端的 DTO
 
-			logger.info("搜索資金記錄 - 帳戶: {}, 金額: {}", account, amount);
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        logger.error("搜索資金記錄時發生錯誤，詳細信息：", e);
 
-			// 查詢符合條件的資金記錄
-			List<GetMoney> records = getMoneyService.getMoneyRecordsByAccountAndAmount(account, amount);
+	        response.put("success", false);
+	        response.put("message", "系統錯誤，請稍後再試");
 
-			logger.info("搜索到 {} 筆符合條件的資金記錄", records.size());
-			response.put("success", true);
-			response.put("records", records);
-
-			return ResponseEntity.ok(response);
-		} catch (Exception e) {
-			logger.error("搜索資金記錄時發生錯誤", e);
-
-			response.put("success", false);
-			response.put("message", "系統錯誤，請稍後再試");
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
+
 
 	/**
 	 * 新增收款記錄API

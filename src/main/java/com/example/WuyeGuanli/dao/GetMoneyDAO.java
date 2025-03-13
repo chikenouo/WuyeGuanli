@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.example.WuyeGuanli.dto.GetMoney;
+import com.example.WuyeGuanli.dto.MoneyAccount;
 
 @Mapper
 public interface GetMoneyDAO {// SQL語法
@@ -22,14 +23,7 @@ public interface GetMoneyDAO {// SQL語法
 	 */
 	public GetMoney getMoneyById(@Param("id") Long id);
 
-	/**
-	 * 根據收款帳號獲取所有收款記錄
-	 * 
-	 * @param account 收款帳號
-	 * @return 收款記錄列表
-	 */
-	public List<GetMoney> getMoneyByAccount(@Param("account") String account);
-
+	
 	/**
 	 * 根據收款帳號和金額獲取收款記錄
 	 * 
@@ -38,4 +32,8 @@ public interface GetMoneyDAO {// SQL語法
 	 * @return 收款記錄列表
 	 */
 	public List<GetMoney> findByAccountAndAmount(@Param("account") String account, @Param("amount") int amount);
+
+	//不在這使用
+	public List<GetMoney> getMoneyByReceiveAccount(@Param("account") String account);
+
 }
