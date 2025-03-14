@@ -13,10 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.WuyeGuanli.dto.CarFee;
 import com.example.WuyeGuanli.dto.GetMoney;
 import com.example.WuyeGuanli.dto.LoginRequest;
 import com.example.WuyeGuanli.dto.LoginResponse;
@@ -26,6 +28,7 @@ import com.example.WuyeGuanli.entity.Role;
 import com.example.WuyeGuanli.entity.User;
 import com.example.WuyeGuanli.repository.UserRepository;
 import com.example.WuyeGuanli.service.AuthService;
+import com.example.WuyeGuanli.service.CarFeeService;
 import com.example.WuyeGuanli.service.GetMoneyService;
 import com.example.WuyeGuanli.service.MoneyTransferService;
 import com.example.WuyeGuanli.service.TransferMoneyService;
@@ -49,11 +52,13 @@ public class TransferMoneyController {
 
 	@Autowired
 	private GetMoneyService getMoneyService;
-	
+
 	@Autowired
 	private MoneyTransferService moneyTransferService;
-	
-	
+
+	@Autowired
+	private CarFeeService carFeeService;
+
 	/**
 	 * 用戶登錄API 繞過AuthService中的角色限制 允許所有角色 (admin, landlord, tenant) 登入
 	 */
@@ -309,7 +314,7 @@ public class TransferMoneyController {
 	/**
 	 * 轉帳API
 	 */
-	@PostMapping("/wallet/transfer") //被/money/moneytransfer取代
+	@PostMapping("/wallet/transfer") // 被/money/moneytransfer取代
 	public ResponseEntity<?> transfer(@RequestBody TransferMoney transferMoney) {
 		Map<String, Object> response = new HashMap<>();
 
@@ -368,7 +373,7 @@ public class TransferMoneyController {
 	/**
 	 * 取得合併後的資金記錄列表API(所有) 可用
 	 */
-	@GetMapping("/money/records") //全查
+	@GetMapping("/money/records") // 全查
 	public ResponseEntity<?> getMoneyRecords(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		Map<String, Object> response = new HashMap<>();
@@ -402,103 +407,101 @@ public class TransferMoneyController {
 		}
 	}
 
-	
-	
-	@GetMapping("/money/searchreceiveacc")  // 由對應'收款'帳號查詢收款紀錄 102420484096
-	public ResponseEntity<?> searchMoneyRecords(@RequestParam("receive_money_account") String receiveMoneyAccount, HttpServletRequest request) {
-	    HttpSession session = request.getSession(false);
-	    Map<String, Object> response = new HashMap<>();
+	@GetMapping("/money/searchreceiveacc") // 由對應'收款'帳號查詢收款紀錄 102420484096
+	public ResponseEntity<?> searchMoneyRecords(@RequestParam("receive_money_account") String receiveMoneyAccount,
+			HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		Map<String, Object> response = new HashMap<>();
 
-	    try {
-	        // 檢查用戶是否已登入
-	        if (session == null || session.getAttribute("isLoggedIn") == null
-	                || !(Boolean) session.getAttribute("isLoggedIn")) {
-	            logger.warn("未登入用戶嘗試搜索資金記錄");
-	            response.put("success", false);
-	            response.put("message", "請先登入");
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-	        }
+		try {
+			// 檢查用戶是否已登入
+			if (session == null || session.getAttribute("isLoggedIn") == null
+					|| !(Boolean) session.getAttribute("isLoggedIn")) {
+				logger.warn("未登入用戶嘗試搜索資金記錄");
+				response.put("success", false);
+				response.put("message", "請先登入");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			}
 
-	        // 查詢符合條件的資金記錄
-	        List<GetMoney> records = getMoneyService.getMoneyByReceiveAccount(receiveMoneyAccount);
-	        
-	        // 如果沒有查到記錄，回應提示
-	        if (records.isEmpty()) {
-	            logger.info("未找到符合條件的資金記錄，帳戶：{}", receiveMoneyAccount);
-	            response.put("success", true);
-	            response.put("message", "無符合條件的資金記錄");
-	            return ResponseEntity.ok(response);
-	        }
+			// 查詢符合條件的資金記錄
+			List<GetMoney> records = getMoneyService.getMoneyByReceiveAccount(receiveMoneyAccount);
 
-	        // 成功找到記錄，輸出結果數量
-	        logger.info("搜索到 {} 筆符合條件的資金記錄", records.size());
-	        response.put("success", true);
-	        response.put("records", records);  // 可以將這裡的 records 转换为适合前端的 DTO
+			// 如果沒有查到記錄，回應提示
+			if (records.isEmpty()) {
+				logger.info("未找到符合條件的資金記錄，帳戶：{}", receiveMoneyAccount);
+				response.put("success", true);
+				response.put("message", "無符合條件的資金記錄");
+				return ResponseEntity.ok(response);
+			}
 
-	        return ResponseEntity.ok(response);
-	    } catch (Exception e) {
-	        logger.error("搜索資金記錄時發生錯誤，詳細信息：", e);
+			// 成功找到記錄，輸出結果數量
+			logger.info("搜索到 {} 筆符合條件的資金記錄", records.size());
+			response.put("success", true);
+			response.put("records", records); // 可以將這裡的 records 转换为适合前端的 DTO
 
-	        response.put("success", false);
-	        response.put("message", "系統錯誤，請稍後再試");
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			logger.error("搜索資金記錄時發生錯誤，詳細信息：", e);
 
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	    }
+			response.put("success", false);
+			response.put("message", "系統錯誤，請稍後再試");
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 	}
-
 
 	/**
 	 * 新增收款記錄API
 	 */
 	@PostMapping("/money/moneytransfer")
 	public ResponseEntity<?> addMoneyRecord(@RequestBody GetMoney getMoney, HttpServletRequest request) {
-	    HttpSession session = request.getSession(false);
-	    Map<String, Object> response = new HashMap<>();
+		HttpSession session = request.getSession(false);
+		Map<String, Object> response = new HashMap<>();
 
-	    try {
-	        // 檢查用戶是否已登入
-	        if (session == null || session.getAttribute("isLoggedIn") == null
-	                || !(Boolean) session.getAttribute("isLoggedIn")) {
-	            logger.warn("未登入用戶嘗試新增收款記錄");
-	            response.put("success", false);
-	            response.put("message", "請先登入");
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-	        }
+		try {
+			// 檢查用戶是否已登入
+			if (session == null || session.getAttribute("isLoggedIn") == null
+					|| !(Boolean) session.getAttribute("isLoggedIn")) {
+				logger.warn("未登入用戶嘗試新增收款記錄");
+				response.put("success", false);
+				response.put("message", "請先登入");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+			}
 
-	        logger.info("處理轉帳請求 - 發送帳戶: {}, 接收帳戶: {}, 金額: {}", 
-	                   getMoney.getSendMoneyAccount(), getMoney.getReceiveMoneyAccount(), getMoney.getReceive());
-	        
-	        // 處理轉帳流程 (提款、存款並記錄)
-	        GetMoney newRecord = moneyTransferService.processTransfer(getMoney);
+			logger.info("處理轉帳請求 - 發送帳戶: {}, 接收帳戶: {}, 金額: {}", getMoney.getSendMoneyAccount(),
+					getMoney.getReceiveMoneyAccount(), getMoney.getReceive());
 
-	        logger.info("轉帳已成功完成，記錄ID: {}", newRecord.getId());
-	        
-	        response.put("success", true);
-	        response.put("message", "轉帳已成功完成");
-	        response.put("record", newRecord);
+			// 處理轉帳流程 (提款、存款並記錄)
+			GetMoney newRecord = moneyTransferService.processTransfer(getMoney);
 
-	        return ResponseEntity.ok(response);
-	    } catch (RuntimeException e) {
-	        logger.warn("轉帳處理失敗: {}", e.getMessage());
-	        
-	        response.put("success", false);
-	        response.put("message", e.getMessage());
-	        
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-	    } catch (Exception e) {
-	        logger.error("處理轉帳時發生錯誤", e);
+			logger.info("轉帳已成功完成，記錄ID: {}", newRecord.getId());
 
-	        response.put("success", false);
-	        response.put("message", "系統錯誤，請稍後再試");
+			response.put("success", true);
+			response.put("message", "轉帳已成功完成");
+			response.put("record", newRecord);
 
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	    }
+			return ResponseEntity.ok(response);
+		} catch (RuntimeException e) {
+			logger.warn("轉帳處理失敗: {}", e.getMessage());
+
+			response.put("success", false);
+			response.put("message", e.getMessage());
+
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		} catch (Exception e) {
+			logger.error("處理轉帳時發生錯誤", e);
+
+			response.put("success", false);
+			response.put("message", "系統錯誤，請稍後再試");
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 	}
 
 	/**
 	 * 取得特定帳戶的收款記錄API
 	 */
-	@GetMapping("/money/account")//條件不嚴謹 暫時無用
+	@GetMapping("/money/account") // 條件不嚴謹 暫時無用
 	public ResponseEntity<?> getAccountRecords(@RequestParam("account") String account, HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		Map<String, Object> response = new HashMap<>();
@@ -547,4 +550,45 @@ public class TransferMoneyController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
+
+	@GetMapping("/money/sendtotalfee")
+	public List<CarFee> carFeeMarger() {
+		return carFeeService.carFeeMarger();
+	}
+
+	@PutMapping("/money/updatepaidstatus")
+	public ResponseEntity<?> autoUpdatePaidStatus(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			// 檢查用戶是否已登入且為管理員
+			if (session == null || session.getAttribute("isLoggedIn") == null
+					|| !(Boolean) session.getAttribute("isLoggedIn")
+					|| !"admin".equals(session.getAttribute("userRole"))) {
+				logger.warn("非管理員用戶嘗試更新車位費用支付狀態");
+				response.put("success", false);
+				response.put("message", "權限不足，僅管理員可操作");
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+			}
+
+			int updatedCount = carFeeService.updateCarFeePaidStatus();
+
+			response.put("success", true);
+			response.put("message", "已成功更新 " + updatedCount + " 筆車位費用支付狀態");
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			logger.error("自動更新車位費用支付狀態時發生錯誤", e);
+			response.put("success", false);
+			response.put("message", "系統錯誤，請稍後再試");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
+	@PostMapping("/money/saveorupdate")
+	public ResponseEntity<Void> saveOrUpdateCarFee(@RequestBody CarFee carFee) {
+		carFeeService.saveOrUpdateCarFee(carFee);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 }

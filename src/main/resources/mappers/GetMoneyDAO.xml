@@ -35,26 +35,17 @@
 	<!--select id = DAO 方法名 -->
 	<select id="moneyMerger" resultMap="GetMoneymergeTransferMoney">
 		<!-- 獲得GetMoney表全部資訊 -->
-		SELECT
-
-		gm.id,
-		gm.receive_money_account,
-		gm.receive,
-		gm.remark,
-		gm.time_of_receiving_money,
-		gm.send_money_account,
-
-	 	SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',-1) AS address_remark,
- 		
- 		SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^',2), '^', -1) AS feefor_remark
- 		
- 		<!--+otherr-->
-
-		FROM get_money gm
-		
-		ORDER BY
-		gm.time_of_receiving_money DESC
-
+	SELECT 
+    gm.id,
+    gm.receive_money_account,
+    gm.receive,
+    gm.remark,
+    gm.time_of_receiving_money,
+    gm.send_money_account,
+    SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',-1) AS address_remark,
+    SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^', 2), '^', -1) AS feefor_remark 
+    FROM get_money gm
+    ORDER BY gm.time_of_receiving_money DESC
 	</select>
 
 	<!--自增關鍵: useGeneratedKeys="true" keyProperty="id" -->
@@ -95,7 +86,7 @@
 		id = #{id}
 	</select>
 
-	<!-- 根據收款帳號獲取收款記錄，加入JOIN查詢以獲取餘額信息 查102420484096-->
+	<!-- 根據收款帳號獲取收款記錄，加入JOIN查詢以獲取餘額信息 例如查102420484096-->
 	<select id="getMoneyByReceiveAccount"
 		resultType="com.example.WuyeGuanli.dto.GetMoney">
 		SELECT
@@ -106,10 +97,7 @@
 	 	SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',-1) AS address_remark,
 	 	
 	 	SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^',2), '^', -1) AS feefor_remark,
-	 	
-	 	 		<!--+otherr-->
 
-		 
 		 gm.remark,
 		 gm.send_money_account AS sendMoneyAccount
 		FROM
