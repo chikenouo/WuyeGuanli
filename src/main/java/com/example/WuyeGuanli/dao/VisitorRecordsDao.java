@@ -1,10 +1,13 @@
 package com.example.WuyeGuanli.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import com.example.WuyeGuanli.entity.Resident_Information;
 import com.example.WuyeGuanli.entity.VisitorRecords;
 
 import jakarta.transaction.Transactional;
@@ -30,4 +33,7 @@ public interface VisitorRecordsDao extends JpaRepository<VisitorRecords, Integer
 	
 	@Query(value = "SELECT * FROM visitor_records",nativeQuery = true)
 	public List<VisitorRecords> gitAll();
+	
+	@Query(value = "SELECT * FROM visitor_records WHERE visitor_name like %?1% AND visitor_time BETWEEN ?2 AND ?3",nativeQuery = true)
+	public List<VisitorRecords> gatNameByAll(String owerName, LocalDateTime starDateTime , LocalDateTime endDateTime);
 }

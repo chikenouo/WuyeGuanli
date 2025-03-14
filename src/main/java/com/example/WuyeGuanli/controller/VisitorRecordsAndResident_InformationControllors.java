@@ -16,6 +16,7 @@ import com.example.WuyeGuanli.vo.UpdateReq;
 import com.example.WuyeGuanli.vo.VisitorAddReq;
 import com.example.WuyeGuanli.vo.VisitorleaveReq;
 import com.example.WuyeGuanli.vo.addinfoReq;
+import com.example.WuyeGuanli.vo.getNamegetAllReq;
 import com.example.WuyeGuanli.service.ifs.ResidentInformationService;
 import com.example.WuyeGuanli.service.ifs.VisitorRecordsService;
 
@@ -32,6 +33,7 @@ public class VisitorRecordsAndResident_InformationControllors
 	ResidentInformationService residentInformationService;
 	@Autowired
 	VisitorRecordsService visitorRecordsService;
+	
 	@PostMapping(value = "/api/residents/Add")
 	public BasicRes create(@Valid @RequestBody addinfoReq req) 
 	{
@@ -74,11 +76,17 @@ public class VisitorRecordsAndResident_InformationControllors
 	{
 		return visitorRecordsService.leave(req);
 	}
+	@PostMapping(value = "/api/visitors/getbyName")
+	public BasicRes visitorleave(@RequestBody getNamegetAllReq req) 
+	{
+		return visitorRecordsService.getNamegetAll(req);
+	}
 	@GetMapping(value = "/api/visitors/getAll")
 	public BasicRes gatAll()
 	{
 		return visitorRecordsService.getAll();
 	}
+
 	
 	
 }

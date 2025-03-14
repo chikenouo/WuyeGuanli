@@ -71,13 +71,13 @@ public class ResidentInformationServiceImpl implements ResidentInformationServic
 	}
 
 	@Override
-	public BasicRes searchName(String owerName) {
-		List<Resident_Information> res = residentDao.gatOwnerNameByAll(owerName);
-		for (Resident_Information resident_Information : res) {
-			System.out.println(res);
+	public ResidentInformationgetAllRes searchName(String owerName) {
+		if(owerName == "1")
+		{
+			owerName = "";	
 		}
-
-		return null;
+		List<Resident_Information> res = residentDao.gatOwnerNameByAll(owerName);
+		 return new ResidentInformationgetAllRes(200, "success", res);
 	}
 
 	@Override

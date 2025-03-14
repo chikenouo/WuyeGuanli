@@ -1,10 +1,11 @@
 package com.example.WuyeGuanli.vo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class FinancialAddInfoReq extends BasicRes{
 	
-	String project;
+String project;
 	
 	int income;
 	
@@ -58,6 +59,7 @@ public class FinancialAddInfoReq extends BasicRes{
 	public String getReceipt() {
 		return receipt;
 	}
+	
 	
 	
 	

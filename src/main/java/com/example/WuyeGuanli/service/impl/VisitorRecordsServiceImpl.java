@@ -1,5 +1,6 @@
 package com.example.WuyeGuanli.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import com.example.WuyeGuanli.vo.ResidentInformationgetAllRes;
 import com.example.WuyeGuanli.vo.VisitorAddReq;
 import com.example.WuyeGuanli.vo.VisitorRecordgetAllres;
 import com.example.WuyeGuanli.vo.VisitorleaveReq;
+import com.example.WuyeGuanli.vo.getNamegetAllReq;
 import com.example.WuyeGuanli.dao.ResidentInformationDaoNMSL;
 import com.example.WuyeGuanli.dao.VisitorRecordsDao;
 import com.example.WuyeGuanli.entity.Resident_Information;
@@ -18,6 +20,7 @@ import com.example.WuyeGuanli.entity.VisitorRecords;
 import com.example.WuyeGuanli.service.ifs.VisitorRecordsService;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Null;
 
 @Service
 public class VisitorRecordsServiceImpl implements VisitorRecordsService {
@@ -88,14 +91,30 @@ public class VisitorRecordsServiceImpl implements VisitorRecordsService {
 		return null;
 	}
 
+
+	@Override
+	public VisitorRecordgetAllres getNamegetAll(getNamegetAllReq req) {
+		// TODO Auto-generated method stub
+		LocalDateTime startTime = req.getStarDateTime();
+		LocalDateTime endTime = req.getEndDateTime();
+		if (startTime == null ||startTime.toString() == "") 
+		{
+			startTime = LocalDateTime.of(1970, 1, 1, 0, 0);
+		}
+		if (endTime == null||endTime.toString() == "") 
+		{
+			endTime = LocalDateTime.of(2999, 1, 1, 0, 0);
+		}
+		List<VisitorRecords> resList = visDao.gatNameByAll(req.getOwerName(), startTime, endTime);
+		return new VisitorRecordgetAllres (200, "success", resList);
+	}
+
 	@Override
 	public VisitorRecordgetAllres getAll() {
-		List<VisitorRecords> resList = visDao.gitAll();
 		
+		List<VisitorRecords> resList = visDao.gitAll();
 		System.out.println(resList);
 		// TODO Auto-generated method stub
 		 return new VisitorRecordgetAllres(200, "success", resList);
 	}
-
-
 }

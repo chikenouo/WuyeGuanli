@@ -29,7 +29,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("http://localhost:4200/api/auth/login","/api/residentLogin","/resources/**", "/api/users/*/avatar", "/api/img/**", "/**/*.html", "/**/*.js", "/**/*.css", "/favicon.ico", "/error");
+                .excludePathPatterns("http://localhost:4200/api/auth/login","/api/residentLogin","/resources/**", 
+                    "/api/users/*/avatar", "/api/img/**", "/**/*.html", "/**/*.js", "/**/*.css", "/favicon.ico", "/error",
+                    "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**");
                 // 一定要排除登入，不然媽的還沒登入哪來令牌啦
     }
 

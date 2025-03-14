@@ -11,6 +11,8 @@ import com.example.WuyeGuanli.dao.FinancialDao;
 import com.example.WuyeGuanli.entity.Financial;
 import com.example.WuyeGuanli.service.ifs.FinancialService;
 import com.example.WuyeGuanli.vo.FinancialAddInfoReq;
+import com.example.WuyeGuanli.vo.FinancialAddInfoVo;
+import com.example.WuyeGuanli.vo.FinancialDelectReq;
 import com.example.WuyeGuanli.vo.FinancialSearchReq;
 import com.example.WuyeGuanli.vo.FinancialSearchRes;
 
@@ -43,6 +45,7 @@ public class FinancialServiceImpl implements FinancialService{
 		}
 		
 		financialDao.addInfoDao(req.getProject(),req.getIncome(),req.getExpenditure(),req.getDate(), req.getRemark(),req.getReceipt());
+		
 //		return new BasicRes(200,"成功");
 		return 200;
 	}
@@ -65,6 +68,12 @@ public class FinancialServiceImpl implements FinancialService{
 		
 		List<Financial> res = financialDao.search(name, sDate, eDate);
 		return new FinancialSearchRes(200,"成功",res);
+	}
+
+	@Override
+	public int delect(FinancialDelectReq req) {
+		financialDao.delectInfo(req.getIds());
+		return 0;
 	}
 
 	

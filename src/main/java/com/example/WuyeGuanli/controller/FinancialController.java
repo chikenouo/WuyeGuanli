@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.WuyeGuanli.service.ifs.FinancialService;
 import com.example.WuyeGuanli.vo.FinancialAddInfoReq;
+import com.example.WuyeGuanli.vo.FinancialDelectReq;
 import com.example.WuyeGuanli.vo.FinancialSearchReq;
 import com.example.WuyeGuanli.vo.FinancialSearchRes;
 
@@ -27,5 +28,9 @@ public class FinancialController {
 		public FinancialSearchRes search(@RequestBody FinancialSearchReq req) {
 			return financialService.search(req);
 	}
-	
-}
+		
+		@PostMapping("/Financial/delect")
+		public int delect(@RequestBody FinancialDelectReq req) {
+			return financialService.delect(req);
+	}
+		}
