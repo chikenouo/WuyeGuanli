@@ -1,5 +1,6 @@
 package com.example.WuyeGuanli.service.ifs;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.WuyeGuanli.vo.BasicRes;
@@ -13,7 +14,7 @@ public interface ResidentInformationService
 {
 	public BasicRes addinfo(addinfoReq req);
 	public ResidentInformationgetAllRes selectAll();
-	public BasicRes searchName(String owerName);
+	public ResidentInformationgetAllRes searchName(String owerName);
 	public BasicRes deleteinformation(DeleteinformationReq req);
 	public BasicRes updateinformation(UpdateReq req);
 	
