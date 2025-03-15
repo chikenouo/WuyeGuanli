@@ -18,21 +18,33 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:4200", "http://localhost:4201")
+                .allowedOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:5173","https://wallet-app-react-nu.vercel.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("Content-Type", "Authorization")
-                .allowCredentials(false)
+                .allowedHeaders("*")
+                .allowCredentials(true)
                 .maxAge(3600);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("http://localhost:4200/api/auth/login","/api/residentLogin","/resources/**", 
-                    "/api/users/*/avatar", "/api/img/**", "/**/*.html", "/**/*.js", "/**/*.css", "/favicon.ico", "/error",
-                    "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**");
-                // 一定要排除登入，不然媽的還沒登入哪來令牌啦
+                .addPathPatterns("/api/**")  // 只攔截/api開頭的路徑
+                .excludePathPatterns(
+                    "/api/auth/login",
+                    "/api/residentLogin",
+                    "/resources/**", 
+                    "/api/users/*/avatar", 
+                    "/api/img/**", 
+                    "/**/*.html", 
+                    "/**/*.js", 
+                    "/**/*.css", 
+                    "/favicon.ico", 
+                    "/error",
+                    "/swagger-ui/**", 
+                    "/swagger-ui.html", 
+                    "/v3/api-docs/**", 
+                    "/swagger-resources/**", 
+                    "/webjars/**");
     }
 
     @Override

@@ -38,7 +38,6 @@ import com.example.WuyeGuanli.service.TransferMoneyService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-
 @RestController
 public class TransferMoneyController {
 	private static final Logger logger = LoggerFactory.getLogger(TransferMoneyController.class);
@@ -61,43 +60,40 @@ public class TransferMoneyController {
 	@Autowired
 	private CarFeeService carFeeService;
 
-	
 	@GetMapping("/wallet/user-info")
-    public ResponseEntity<?> getUserInfo(@RequestParam("identityNumber") String identityNumber) {
-        logger.info("收到獲取用戶資料請求，身分證號: {}", identityNumber);
+	public ResponseEntity<?> getUserInfo(@RequestParam("identityNumber") String identityNumber) {
+		logger.info("收到獲取用戶資料請求，身分證號: {}", identityNumber);
 
-        try {
-            // 根據 identityNumber 從資料庫或其他來源查詢使用者資料
-            // 這裡假設您有一個 UserRepository 可以根據 identityNumber 查詢 User 物件
-            List<User> users = userRepository.findByIdentityNumber(identityNumber);
+		try {
+			// 根據 identityNumber 從資料庫或其他來源查詢使用者資料
+			// 這裡假設您有一個 UserRepository 可以根據 identityNumber 查詢 User 物件
+			List<User> users = userRepository.findByIdentityNumber(identityNumber);
 
-            if (users != null && !users.isEmpty()) {
-                User user = users.get(0); // 假設 identityNumber 是唯一的
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", true);
-                response.put("name", user.getName()); // 假設 User 物件有 getName() 方法
-                response.put("identityNumber", user.getIdentityNumber());
-                // 您可以根據需要添加其他使用者資訊
+			if (users != null && !users.isEmpty()) {
+				User user = users.get(0); // 假設 identityNumber 是唯一的
+				Map<String, Object> response = new HashMap<>();
+				response.put("success", true);
+				response.put("name", user.getName()); // 假設 User 物件有 getName() 方法
+				response.put("identityNumber", user.getIdentityNumber());
+				// 您可以根據需要添加其他使用者資訊
 
-                return ResponseEntity.ok(response);
-            } else {
-                logger.warn("找不到身分證號為 {} 的用戶", identityNumber);
-                Map<String, Object> response = new HashMap<>();
-                response.put("success", false);
-                response.put("message", "找不到該用戶");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-        } catch (Exception e) {
-            logger.error("獲取用戶資料時發生錯誤", e);
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "系統錯誤，請稍後再試");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
-	
-	
-	
+				return ResponseEntity.ok(response);
+			} else {
+				logger.warn("找不到身分證號為 {} 的用戶", identityNumber);
+				Map<String, Object> response = new HashMap<>();
+				response.put("success", false);
+				response.put("message", "找不到該用戶");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+			}
+		} catch (Exception e) {
+			logger.error("獲取用戶資料時發生錯誤", e);
+			Map<String, Object> response = new HashMap<>();
+			response.put("success", false);
+			response.put("message", "系統錯誤，請稍後再試");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
+
 	/**
 	 * 用戶登錄API 繞過AuthService中的角色限制 允許所有角色 (admin, landlord, tenant) 登入
 	 */
@@ -419,14 +415,14 @@ public class TransferMoneyController {
 
 		try {
 			// 檢查用戶是否已登入
-			if (session == null || session.getAttribute("isLoggedIn") == null
-					|| !(Boolean) session.getAttribute("isLoggedIn")) {
-
-				logger.warn("未登入用戶嘗試訪問資金記錄");
-				response.put("success", false);
-				response.put("message", "請先登入");
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-			}
+//			if (session == null || session.getAttribute("isLoggedIn") == null
+//					|| !(Boolean) session.getAttribute("isLoggedIn")) {
+//
+//				logger.warn("未登入用戶嘗試訪問資金記錄");
+//				response.put("success", false);
+//				response.put("message", "請先登入");
+//				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+//			}
 
 			// 取得合併後的資金記錄列表
 			List<GetMoney> records = getMoneyService.getMoneyMergerList();
@@ -499,14 +495,14 @@ public class TransferMoneyController {
 
 		try {
 			// 檢查用戶是否已登入
-			if (session == null || session.getAttribute("isLoggedIn") == null
-					|| !(Boolean) session.getAttribute("isLoggedIn")) {
-				logger.warn("未登入用戶嘗試新增收款記錄");
-				logger.info("處理轉帳請求 - Session ID: {}", session != null ? session.getId() : "null");
-				response.put("success", false);
-				response.put("message", "請先登入");
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-			}
+//			if (session == null || session.getAttribute("isLoggedIn") == null
+//					|| !(Boolean) session.getAttribute("isLoggedIn")) {
+//				logger.warn("未登入用戶嘗試新增收款記錄");
+//				logger.info("處理轉帳請求 - Session ID: {}", session != null ? session.getId() : "null");
+//				response.put("success", false);
+//				response.put("message", "請先登入");
+//				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+//			}
 
 			logger.info("處理轉帳請求 - 發送帳戶: {}, 接收帳戶: {}, 金額: {}", getMoney.getSendMoneyAccount(),
 					getMoney.getReceiveMoneyAccount(), getMoney.getReceive());
@@ -598,21 +594,21 @@ public class TransferMoneyController {
 
 	@PutMapping("/money/updatepaidstatus")
 	public ResponseEntity<?> autoUpdatePaidStatus(HttpServletRequest request) {
-	    Map<String, Object> response = new HashMap<>();
+		Map<String, Object> response = new HashMap<>();
 
-	    try {
-	        // 直接執行更新，不檢查用戶身份
-	        int updatedCount = carFeeService.updateCarFeePaidStatus();
+		try {
+			// 直接執行更新，不檢查用戶身份
+			int updatedCount = carFeeService.updateCarFeePaidStatus();
 
-	        response.put("success", true);
-	        response.put("message", "已成功更新 " + updatedCount + " 筆車位費用支付狀態");
-	        return ResponseEntity.ok(response);
-	    } catch (Exception e) {
-	        logger.error("自動更新車位費用支付狀態時發生錯誤", e);
-	        response.put("success", false);
-	        response.put("message", "系統錯誤，請稍後再試");
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	    }
+			response.put("success", true);
+			response.put("message", "已成功更新 " + updatedCount + " 筆車位費用支付狀態");
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			logger.error("自動更新車位費用支付狀態時發生錯誤", e);
+			response.put("success", false);
+			response.put("message", "系統錯誤，請稍後再試");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 	}
 
 	@PostMapping("/money/saveorupdate")
@@ -620,40 +616,40 @@ public class TransferMoneyController {
 		carFeeService.saveOrUpdateCarFee(carFee);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/money/{parking}")
 	public ResponseEntity<Map<String, Object>> deleteCarFee(@PathVariable("parking") String parking) {
-	    Map<String, Object> response = new HashMap<>();
-	    
-	    try {
-	        logger.info("嘗試刪除車位 {} 的費用記錄", parking);
-	        
-	        // 檢查 parking 參數是否有效
-	        if (parking == null || parking.isEmpty()) {
-	            logger.warn("刪除車位時收到無效的停車位參數");
-	            response.put("success", false);
-	            response.put("message", "無效的停車位參數");
-	            return ResponseEntity.badRequest().body(response);
-	        }
-	        
-	        // 執行刪除操作
-	        int result = carFeeService.deleteCarFeeByParking(parking);
-	        logger.info("刪除車位 {} 的結果: {}", parking, result);
-	        
-	        if (result > 0) {
-	            response.put("success", true);
-	            response.put("message", "車位費用記錄刪除成功");
-	            return ResponseEntity.ok(response);
-	        } else {
-	            response.put("success", false);
-	            response.put("message", "找不到該車位費用記錄");
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-	        }
-	    } catch (Exception e) {
-	        logger.error("刪除車位 {} 的費用記錄時發生錯誤: {}", parking, e.getMessage(), e);
-	        response.put("success", false);
-	        response.put("message", "系統錯誤，請稍後再試");
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	    }
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			logger.info("嘗試刪除車位 {} 的費用記錄", parking);
+
+			// 檢查 parking 參數是否有效
+			if (parking == null || parking.isEmpty()) {
+				logger.warn("刪除車位時收到無效的停車位參數");
+				response.put("success", false);
+				response.put("message", "無效的停車位參數");
+				return ResponseEntity.badRequest().body(response);
+			}
+
+			// 執行刪除操作
+			int result = carFeeService.deleteCarFeeByParking(parking);
+			logger.info("刪除車位 {} 的結果: {}", parking, result);
+
+			if (result > 0) {
+				response.put("success", true);
+				response.put("message", "車位費用記錄刪除成功");
+				return ResponseEntity.ok(response);
+			} else {
+				response.put("success", false);
+				response.put("message", "找不到該車位費用記錄");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+			}
+		} catch (Exception e) {
+			logger.error("刪除車位 {} 的費用記錄時發生錯誤: {}", parking, e.getMessage(), e);
+			response.put("success", false);
+			response.put("message", "系統錯誤，請稍後再試");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 	}
 }

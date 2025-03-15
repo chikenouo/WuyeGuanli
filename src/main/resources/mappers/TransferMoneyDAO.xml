@@ -33,6 +33,7 @@
 	<!-- resultMap 後面的字串就是上面 resultMap 標籤中，id 後面的字串 -->
 	<select id="getTransferMoneyUserDTO"
 		resultMap="TransferMoneymergeusers">
+		<!--沒用到-->
 		SELECT
 		tm.account,
 		tm.transfer,
@@ -56,22 +57,23 @@
     </insert>
     
     <select id="getTransferMoneyByAccount" parameterType="string" resultMap="TransferMoneymergeusers">
-        SELECT
-            tm.account,
-            tm.transfer,
-            tm.balance,
-            tm.update_time,
-            u.identity_number,
-            u.password
-        FROM
-            transfer_money tm
-        LEFT JOIN
-            users u
-        ON
-            u.identity_number = SUBSTRING_INDEX(tm.account, '$', 1)
-        WHERE
-            tm.account = #{account}
-    </select>
+    <!--根據帳號查詢以下條件-->
+    SELECT
+        tm.account,
+        tm.transfer,
+        tm.balance,
+        tm.update_time,
+        u.identity_number,
+        u.password
+    FROM
+        transfer_money tm
+    LEFT JOIN
+        users u
+    ON
+        u.identity_number = tm.account
+    WHERE
+        tm.account = #{account}
+</select>
     
      <!-- 根據帳號更新 transfer_money 資料 -->
     <update id="updateTransferMoney">
