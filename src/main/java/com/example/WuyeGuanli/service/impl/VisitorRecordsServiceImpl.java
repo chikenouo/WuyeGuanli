@@ -34,7 +34,7 @@ public class VisitorRecordsServiceImpl implements VisitorRecordsService {
 	@Override
 	public BasicRes addinfo(VisitorAddReq req) {
 		
-		String patternString = "\\d{8}";
+		String patternString = "\\d{10}";
 		// 檢查訪客手機
 		if (!req.getVisitorPhone().matches(patternString)) {
 			System.out.println(req.getVisitorPhone());

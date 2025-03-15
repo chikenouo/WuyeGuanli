@@ -3,13 +3,13 @@ package com.example.WuyeGuanli.vo;
 import jakarta.validation.constraints.NotNull;
 
 public class addinfoReq extends BasicRes {
-	@NotNull
+	@NotNull(message = "門牌不能為空")
 	private String partitionhousenumber;
-	@NotNull
+	@NotNull(message = "門牌不能為空")
 	private String owerName;
-	@NotNull
+	@NotNull(message = "門牌不能為空")
 	private String owerPhone;
-	@NotNull
+	@NotNull(message = "門牌不能為空")
 	private boolean lease;
 
 	private String residentname;
