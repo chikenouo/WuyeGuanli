@@ -17,4 +17,8 @@ public interface CarFeeDAO {
     public int updateCarFeePaidStatus();
     
     public void insertOrUpdateCarFee(CarFee carFee);
+    
+    public int deleteByParking(String parking);
+
+    
 }

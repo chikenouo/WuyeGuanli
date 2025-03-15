@@ -49,7 +49,7 @@ public class FeeController {
 		return feeInfoService.getAllFeeInfo();
 	}
 
-	// 用來獲取指定門牌地址資料的 GET 方法 (如果要獲得門牌地址 就用上面getAll())
+	// 用來獲取指定門牌地址資料的 GET 方法 (如果要獲得全部門牌地址 就用上面getAll())
 	@GetMapping("/fee/getbyid")
 	public List<FeeInfo> getByAddress(@RequestParam(name="address",required = false) String address) {
 		if (address == null || address.isEmpty()) {

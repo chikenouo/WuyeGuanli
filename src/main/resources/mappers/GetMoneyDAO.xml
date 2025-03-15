@@ -93,10 +93,18 @@
 		 gm.receive_money_account AS receiveMoneyAccount,
 		 gm.receive,
 		 gm.time_of_receiving_money AS timeOfReceivingMoney,
-		 
-	 	SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',-1) AS address_remark,
-	 	
-	 	SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^',2), '^', -1) AS feefor_remark,
+
+		CASE
+			WHEN LOCATE('#', gm.remark) > 0 AND LOCATE('#', gm.remark, LOCATE('#', gm.remark) + 1) > 0
+			THEN SUBSTRING(gm.remark, LOCATE('#', gm.remark) + 1, LOCATE('#', gm.remark, LOCATE('#', gm.remark) + 1) - LOCATE('#', gm.remark) - 1)
+			ELSE '' 
+		END AS address_remark,
+
+		CASE
+			WHEN LOCATE('^', gm.remark) > 0 AND LOCATE('^', gm.remark, LOCATE('^', gm.remark) + 1) > 0
+			THEN SUBSTRING(gm.remark, LOCATE('^', gm.remark) + 1, LOCATE('^', gm.remark, LOCATE('^', gm.remark) + 1) - LOCATE('^', gm.remark) - 1)
+			ELSE '' 
+		END AS feefor_remark,
 
 		 gm.remark,
 		 gm.send_money_account AS sendMoneyAccount
@@ -104,9 +112,8 @@
 		 get_money gm
 		WHERE
 		 gm.receive_money_account = #{account}
-		AND gm.time_of_receiving_money > CURDATE() - INTERVAL 365 DAY
 		ORDER BY
-		 gm.time_of_receiving_money DESC
+		 gm.send_money_account
 	</select>
 
 	<!-- 根據收款帳號和金額獲取收款記錄，同樣加入JOIN查詢 -->

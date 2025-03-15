@@ -29,4 +29,8 @@ public class CarFeeService {
     public void saveOrUpdateCarFee(CarFee carFee) {
         carFeeDAO.insertOrUpdateCarFee(carFee);
     }
+    
+    public int deleteCarFeeByParking(String parking) {
+        return carFeeDAO.deleteByParking(parking);
+    }
 }

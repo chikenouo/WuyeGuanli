@@ -77,40 +77,43 @@
 
 	<!-- 獨立功能：更新車位費用支付狀態 - 根據匯款金額自動更新 -->
 	<update id="updateCarFeePaidStatus">
-		UPDATE car_fee cf
-		JOIN (
-		SELECT
-		owner,
-		SUM(parking_fee)
-		AS total_parking_fee
-		FROM car_fee
-		GROUP BY owner
-		) AS total_fees ON
-		cf.owner = total_fees.owner
-		SET cf.paid = CASE
-		WHEN (SELECT
-		COALESCE(SUM(gm.receive), 0)
-		FROM get_money gm
-		WHERE
-		gm.send_money_account = cf.owner
-		AND gm.receive_money_account =
-		'102420484096'
-		AND gm.time_of_receiving_money > CURDATE() - INTERVAL
-		365 DAY)
-		>= total_fees.total_parking_fee
-		THEN 1
-		ELSE 0
-		END
-		WHERE EXISTS (
-		SELECT 1
-		FROM get_money gm
-		WHERE gm.send_money_account = cf.owner
-		AND
-		gm.receive_money_account = '102420484096'
-		AND
-		gm.time_of_receiving_money > CURDATE() - INTERVAL 365 DAY
-		);
-	</update>
+    UPDATE car_fee cf
+    JOIN (
+        SELECT
+            owner,
+            SUM(parking_fee) AS total_parking_fee
+        FROM car_fee
+        GROUP BY owner
+    ) AS total_fees ON cf.owner = total_fees.owner
+    SET cf.paid = CASE
+        WHEN (
+            SELECT
+                COALESCE(SUM(gm.receive), 0)
+            FROM get_money gm
+            WHERE
+                gm.send_money_account = cf.owner
+                AND gm.receive_money_account = '102420484096'
+                AND gm.time_of_receiving_money > CURDATE() - INTERVAL 365 DAY
+        ) >= total_fees.total_parking_fee
+        THEN 1
+        WHEN (
+            SELECT
+                COALESCE(SUM(gm.receive), 0)
+            FROM get_money gm
+            WHERE
+                gm.send_money_account = cf.owner
+                AND gm.receive_money_account = '102420484096'
+                AND gm.time_of_receiving_money > CURDATE() - INTERVAL 365 DAY  ) &lt; total_fees.total_parking_fee
+        THEN cf.paid  ELSE cf.paid  END
+    WHERE EXISTS (
+        SELECT 1
+        FROM get_money gm
+        WHERE
+            gm.send_money_account = cf.owner
+            AND gm.receive_money_account = '102420484096'
+            AND gm.time_of_receiving_money > CURDATE() - INTERVAL 365 DAY
+    );
+</update>
 
 
 	<insert id="insertOrUpdateCarFee"
@@ -122,5 +125,10 @@
 		owner = #{owner},
 		paid = #{paid}
 	</insert>
+	
+	<delete id="deleteByParking" parameterType="java.lang.String">
+		DELETE FROM car_fee
+		WHERE parking = #{parking}
+	</delete>
 
 </mapper>
