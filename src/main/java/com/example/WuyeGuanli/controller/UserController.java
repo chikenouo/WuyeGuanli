@@ -54,9 +54,24 @@ public class UserController {
      * 請求範例：POST /api/users
      */
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        // 此處可加入權限驗證，如檢查是否為管理員或房東
-        return userService.createUser(user);
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        // 驗證必填欄位
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            return ResponseEntity.badRequest().body("密碼不能為空");
+        }
+        if (user.getName() == null || user.getName().isEmpty()) {
+            return ResponseEntity.badRequest().body("用戶名不能為空");
+        }
+        if (user.getIdentityNumber() == null || user.getIdentityNumber().isEmpty()) {
+            return ResponseEntity.badRequest().body("身份證號不能為空");
+        }
+        if (user.getRole() == null) {
+            return ResponseEntity.badRequest().body("角色不能為空");
+        }
+        
+        // 創建用戶
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.ok(createdUser);
     }
 
     /**
