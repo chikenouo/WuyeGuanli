@@ -32,6 +32,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         "/money/**",
         "/fee/**",
         "/rental/**",
+         "/Financial/**",
        "/api/residents/getAll",
             "/api/residents/Add",
             "/api/repairs",
