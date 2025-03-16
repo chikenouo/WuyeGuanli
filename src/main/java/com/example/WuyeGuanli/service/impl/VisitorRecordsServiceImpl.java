@@ -45,6 +45,10 @@ public class VisitorRecordsServiceImpl implements VisitorRecordsService {
 		//檢查對象是否存在
 		String VisitorStr = req.getVisitors().substring(0,3);
 		Resident_Information resident_Information = residentDao.gatPartitionhousenumberByAll(VisitorStr);
+		if (resident_Information == null) {
+			System.out.println("查無此門牌");
+			return null;
+		}
 		if (!StringUtils.hasText(resident_Information.getPartitionhousenumber()))
 		{
 			System.out.println("查無此門牌");

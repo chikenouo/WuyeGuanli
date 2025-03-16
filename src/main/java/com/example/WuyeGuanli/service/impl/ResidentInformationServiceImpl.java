@@ -30,6 +30,9 @@ public class ResidentInformationServiceImpl implements ResidentInformationServic
 
 		String patternString = "\\d{8}";
 		// 檢查房東手機
+		if (req.getOwerPhone() == null) {
+			return new BasicRes(400, "房東手機號碼不能為空!");
+		}
 		if (!req.getOwerPhone().matches(patternString)) {
 			System.out.println(req.getOwerPhone());
 			System.out.println(req.getOwerPhone().matches(patternString));
@@ -96,6 +99,9 @@ public class ResidentInformationServiceImpl implements ResidentInformationServic
 		if(!StringUtils.hasText(res.getPartitionhousenumber()))
 		{
 			return null;
+		}
+		if (req.getOwerPhone() == null) {
+			return new BasicRes(400, "房東手機號碼不能為空!");
 		}
 		if (!req.getOwerPhone().matches(patternString)) {
 			System.out.println(req.getOwerPhone());

@@ -20,17 +20,24 @@ public class TokenInterceptor implements HandlerInterceptor {
     private final JwtUtils jwtUtils;
     private static final Logger logger = LoggerFactory.getLogger(TokenInterceptor.class);
     private static final List<String> ALLOWED_ORIGINS = Arrays.asList(
-        "http://localhost:4200", 
+        "http://localhost:4200",
         "http://localhost:5173",
-        "https://wallet-app-react-nu.vercel.app"
+        "https://wallet-app-react-nu.vercel.app",
+            "https://noveres.github.io/fgbd/"
     );
-    
+
     // 哪些路徑需要完全放行（不需要驗證token）
     private static final List<String> ALLOWED_PATHS = Arrays.asList(
-        "/wallet/**", 
+        "/wallet/**",
         "/money/**",
         "/fee/**",
-        "/rental/**"
+        "/rental/**",
+       "/api/residents/getAll",
+            "/api/residents/Add",
+            "/api/repairs",
+            "/api/residents",
+            "/api/visitors",
+            "/api/visitors/Add"
     );
 
     public TokenInterceptor(JwtUtils jwtUtils) {
@@ -44,7 +51,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_OK);
             return true;
         }
-        
+
         // 檢查請求路徑是否屬於放行路徑
         String requestPath = request.getRequestURI();
         for (String allowedPath : ALLOWED_PATHS) {
@@ -53,7 +60,7 @@ public class TokenInterceptor implements HandlerInterceptor {
                 return true;
             }
         }
-        
+
         // 檢查Origin是否為允許的前端來源
         String origin = request.getHeader("Origin");
         if (origin != null && ALLOWED_ORIGINS.contains(origin)) {
