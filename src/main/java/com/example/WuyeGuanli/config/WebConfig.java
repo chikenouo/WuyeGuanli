@@ -53,6 +53,8 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/api/users/*/avatar")
                 .addResourceLocations("file:src/main/resources/static/avatars/");
-        registry.addResourceHandler("/api/img/**").addResourceLocations("classpath:/static/img/");
+        registry.addResourceHandler("/api/img/**").addResourceLocations("classpath:/img/");
+        registry.addResourceHandler("/assets/images/**")
+                .addResourceLocations("classpath:/static/WS/");
     }
 }
