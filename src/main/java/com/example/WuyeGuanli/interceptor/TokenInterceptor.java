@@ -38,6 +38,11 @@ public class TokenInterceptor implements HandlerInterceptor {
             "/api/residents",
             "/api/visitors",
             "/api/visitors/Add"
+            ,"/wallet/check-session",
+            "/api/users/"
+            ,"/api/dashboards"
+            ,"/api/announcements"
+            ,"/api/upload/image"
     );
 
     public TokenInterceptor(JwtUtils jwtUtils) {
