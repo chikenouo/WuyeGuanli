@@ -35,7 +35,7 @@ public class ResidentLoginServiceImpl implements ResidentLoginService {
         claims.put("id", result.getId());
         claims.put("identityNumber", result.getIdentityNumber());
         String jwt = JwtUtils.generateToken(claims);
-        return new ResidentLoginInfo(result.getId(), result.getIdentityNumber(), result.getName(), jwt);
+        return new ResidentLoginInfo(result.getId(), result.getAddress(), result.getName(), jwt);
     }
 
     @Override

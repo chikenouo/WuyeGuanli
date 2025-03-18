@@ -6,9 +6,9 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface ResidentLoginDao {
-    @Select("select id, identity_number, password, name, role, is_currently_residing from users where identity_number = #{identityNumber} and password = #{password}")
+    @Select("select id, address, password, name, role, is_currently_residing from users where identity_number = #{identityNumber} and password = #{password}")
     User selectByUsernameAndPassword(User user);
 
-    @Select("select id, identity_number, password, name, role, is_currently_residing from users where identity_number = #{identityNumber}")
+    @Select("select id, address, password, name, role, is_currently_residing from users where identity_number = #{identityNumber}")
     User selectByIdentityNumber(String identityNumber);
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResidentLoginInfo {
     private Long id;
-    private String username;
+    private String address;
     private String name;
     private String token;
 }

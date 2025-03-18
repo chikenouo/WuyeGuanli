@@ -24,6 +24,9 @@ public class User {
     // 用戶名稱
     private String name;
 
+    @Column(name = "address")
+    private String address;
+
     // 身份證號 (房客預設用作初次登入密碼)
     @Column(name = "identity_number")
     private String identityNumber;
@@ -57,6 +60,8 @@ public class User {
     @OneToMany(mappedBy = "landlord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> tenants;
 
+
+
     /**
      * 當新資料建立前，自動填入 UTC 時間
      */
@@ -80,6 +85,7 @@ public class User {
 
     // 以下為 Getter 與 Setter 方法
 
+
     public Long getId() {
         return id;
     }
@@ -94,6 +100,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getIdentityNumber() {
