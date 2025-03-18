@@ -38,18 +38,19 @@ public class TokenInterceptor implements HandlerInterceptor {
             "/api/repairs",
             "/api/residents",
             "/api/visitors",
-
+<<<<<<< HEAD
             "/api/visitors/Add"
             ,"/wallet/check-session",
             "/api/users/"
             ,"/api/dashboards"
             ,"/api/announcements"
-            ,"/api/upload/image",
+            ,"/api/upload/image"
+=======
             "/api/visitors/Add",
             "/api/Financial/addInfo",
             "/api/Financial/search",
             "/api/Financial/delect"
-
+>>>>>>> 59be5b1 (新增更能修正)
     );
 
     public TokenInterceptor(JwtUtils jwtUtils) {

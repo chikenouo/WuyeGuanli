@@ -20,7 +20,7 @@ public interface FinancialDao extends JpaRepository<Financial, Integer> {
 	@Modifying
 	@Transactional
 	@Query(value = "insert into financial (project,income,expenditure,date,remark,receipt) values (?1,?2,?3,?4,?5,?6)", nativeQuery = true)
-	public FinancialAddInfoReq addInfoDao(String project, int income, int expenditure, LocalDate date, String remark,String receipt);
+	public int addInfoDao(String project, int income, int expenditure, LocalDate date, String remark,String receipt);
 	
 	@Query(value = "select * from financial where project like %?1% and date >= ?2 and date <= ?3", nativeQuery = true)
 	public List<Financial> search(String name, LocalDate sDate, LocalDate eDate);

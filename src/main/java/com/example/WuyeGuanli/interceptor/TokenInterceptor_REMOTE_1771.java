@@ -32,24 +32,15 @@ public class TokenInterceptor implements HandlerInterceptor {
         "/money/**",
         "/fee/**",
         "/rental/**",
-         "/Financial/**",
        "/api/residents/getAll",
             "/api/residents/Add",
             "/api/repairs",
             "/api/residents",
             "/api/visitors",
-
-            "/api/visitors/Add"
-            ,"/wallet/check-session",
-            "/api/users/"
-            ,"/api/dashboards"
-            ,"/api/announcements"
-            ,"/api/upload/image",
             "/api/visitors/Add",
             "/api/Financial/addInfo",
             "/api/Financial/search",
             "/api/Financial/delect"
-
     );
 
     public TokenInterceptor(JwtUtils jwtUtils) {
