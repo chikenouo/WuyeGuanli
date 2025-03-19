@@ -44,6 +44,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             ,"/api/dashboards"
             ,"/api/announcements"
             ,"/api/upload/image"
+            ,"/api/maintenance/top3"
     );
 
     public TokenInterceptor(JwtUtils jwtUtils) {
