@@ -44,7 +44,10 @@ public class WebConfig implements WebMvcConfigurer {
                     "/swagger-ui.html",
                     "/v3/api-docs/**",
                     "/swagger-resources/**",
-                    "/webjars/**");
+                    "/webjars/**",
+                    "/api/Financial/addInfo",
+                    "/api/Financial/search",
+                    "/api/Financial/delect");
     }
 
     @Override
