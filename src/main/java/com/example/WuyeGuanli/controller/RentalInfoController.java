@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.WuyeGuanli.entity.RentalInfo;
 import com.example.WuyeGuanli.service.ifs.RentalInfoService;
 import com.example.WuyeGuanli.vo.RentalInfoRes;
+import com.example.WuyeGuanli.vo.WhoRentalRes;
 
 @RestController
 @CrossOrigin
-public class rentalInfoController {
+public class RentalInfoController {
 
 	@Autowired
 	private RentalInfoService rentalInfoService;
@@ -34,9 +35,29 @@ public class rentalInfoController {
 		rentalInfoService.deleteByPK(idrental);
 		return new RentalInfoRes(200, "刪除成功");
 	}
-	
+
 	@GetMapping("rental/getall")
 	public List<RentalInfo> getAll() {
 		return rentalInfoService.getAll();
+	}
+
+	//
+
+	@PostMapping("rental/whorental")
+	public WhoRentalRes addWhoRental(@RequestBody WhoRentalRes whoRentalRes) {
+		rentalInfoService.addWhoRental(whoRentalRes);
+		return new WhoRentalRes(200, "增或改租借檔案成功",
+				whoRentalRes.getIdwhoRental(),
+				whoRentalRes.getRentalWhat(),
+				whoRentalRes.getAccountRental(), 
+				whoRentalRes.isReturnYorN(), 
+				whoRentalRes.isVerify(),
+				whoRentalRes.getChangeTime());
+	}
+
+	@DeleteMapping("rental/delete/whorental/{idwhorental}")
+	public RentalInfoRes deleteByWRPK(@PathVariable("idwhorental") int idwho_rental) {
+		rentalInfoService.deleteByWRPK(idwho_rental);
+		return new RentalInfoRes(200, "刪除租借資訊成功");
 	}
 }
