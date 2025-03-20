@@ -19,8 +19,7 @@ public interface VisitorRecordsDao extends JpaRepository<VisitorRecords, Integer
 	
 	@Query(value = "SELECT * FROM visitor_records WHERE visitor_id = ?1 ",nativeQuery = true)
 	public int gitId(int id);
-	
-	@Modifying
+		@Modifying
 	@Transactional
 	@Query(value = "INSERT INTO visitor_records (visitor_name, visitor_phone , visitor_reason, visitors) VALUES (?1,?2,?3,?4)" ,nativeQuery = true)
 	public int Add(String name ,String phone ,String reson , String Visitors);

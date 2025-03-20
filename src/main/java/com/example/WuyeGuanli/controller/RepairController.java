@@ -1,5 +1,6 @@
 package com.example.WuyeGuanli.controller;
 
+import com.example.WuyeGuanli.dto.RepairDTO;
 import com.example.WuyeGuanli.entity.Report;
 import com.example.WuyeGuanli.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,10 @@ public class RepairController {
     
     private final ReportService reportService;
     private final Path fileStoragePath;
-    
+
+    @Autowired
+    private com.example.WuyeGuanli.service.ifs.ReportService reportService2;
+
     @Autowired
     public RepairController(ReportService reportService) {
         this.reportService = reportService;
@@ -318,4 +322,11 @@ public class RepairController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @GetMapping("/top3")
+    public List<RepairDTO>getTop3MostReported() {
+        return reportService2.findTop3MostReported();
+    }
+
 }
