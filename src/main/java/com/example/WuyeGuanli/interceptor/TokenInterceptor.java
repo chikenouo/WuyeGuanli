@@ -38,7 +38,6 @@ public class TokenInterceptor implements HandlerInterceptor {
             "/api/repairs",
             "/api/residents",
             "/api/visitors",
-
             "/api/visitors/Add"
             ,"/wallet/check-session",
             "/api/users/"
@@ -51,8 +50,6 @@ public class TokenInterceptor implements HandlerInterceptor {
             "/api/Financial/addInfo",
             "/api/Financial/search",
             "/api/Financial/delect"
-
-
     );
 
     public TokenInterceptor(JwtUtils jwtUtils) {

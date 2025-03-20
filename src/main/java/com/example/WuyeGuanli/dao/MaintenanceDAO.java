@@ -10,7 +10,7 @@ import java.util.List;
 
 // 這邊繼承什麼小我還沒搞清楚 :D
 @Mapper
-public interface MaintenanceDAO extends BaseMapper<com.example.maintenance.entity.MaintenanceEntity> {
+public interface MaintenanceDAO extends BaseMapper<com.example.WuyeGuanli.entity.MaintenanceEntity> {
     @Select("""
                 SELECT location, floor, description, COUNT(*) AS count
                 FROM maintenance
