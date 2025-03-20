@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.WuyeGuanli.dto.WhoRentalDTO;
 import com.example.WuyeGuanli.entity.RentalInfo;
 import com.example.WuyeGuanli.entity.WhoRental;
 import com.example.WuyeGuanli.repository.RentalInfoRepository;
@@ -51,7 +52,8 @@ public class RentalInfoImpl implements RentalInfoService {
 
 	@Override
 	public WhoRentalRes addWhoRental(WhoRentalRes whoRentalRes) {
-		WhoRental whoRental= new WhoRental();
+		WhoRental whoRental = new WhoRental();
+
 		whoRental.setIdwhoRental(whoRentalRes.getIdwhoRental());
 		whoRental.setRentalWhat(whoRentalRes.getRentalWhat());
 		whoRental.setAccountRental(whoRentalRes.getAccountRental());
@@ -59,12 +61,33 @@ public class RentalInfoImpl implements RentalInfoService {
 		whoRental.setVerify(Boolean.TRUE.equals(whoRentalRes.isVerify()));
 		whoRental.setChangeTime(LocalDateTime.now());
 		whoRentalRepository.save(whoRental);
-		return new WhoRentalRes(200,"新增成功");
+		return new WhoRentalRes(200, "新增成功");
 	}
 
 	@Override
-	public RentalInfoRes deleteByWRPK(int idwho_rental) {
+	public WhoRentalRes deleteByWRPK(int idwho_rental) {
 		whoRentalRepository.deleteById(idwho_rental);
 		return null;
 	}
+
+	@Override
+	public WhoRentalRes selectByWRPK(int idwho_rental) {
+		List<WhoRentalDTO> whoRentalDTOList = whoRentalRepository.selectWhoRentalById(idwho_rental);
+
+		if (whoRentalDTOList == null || whoRentalDTOList.isEmpty()) {
+			return new WhoRentalRes(404, "找不到租借資訊");
+		}
+
+		WhoRentalDTO dto = whoRentalDTOList.get(0);
+
+		return new WhoRentalRes(200, "查詢成功", dto.getIdwhoRental(), dto.getRentalWhat(), dto.getAccountRental(),
+				dto.isReturnYorN(), dto.isVerify(), dto.getChangeTime(), dto.getTotal(), dto.getName());
+	}
+
+	@Override
+	public List<WhoRentalDTO> selectAllWR() {
+		// TODO Auto-generated method stub
+		return whoRentalRepository.selectAllWhoRental();
+	}
+
 }

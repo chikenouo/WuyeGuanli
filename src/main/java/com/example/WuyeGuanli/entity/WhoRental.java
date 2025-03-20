@@ -86,7 +86,7 @@ public class WhoRental {
 			  `verify` tinyint(1) DEFAULT 0,
 			  `change_time` datetime DEFAULT CURRENT_TIMESTAMP,
 			  PRIMARY KEY (`idwho_rental`)
-			) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='哪個帳號租借了啥';
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='哪個帳號租借了啥';
 */
 	//連表查
 	//受權自動更新

@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.WuyeGuanli.dto.WhoRentalDTO;
 import com.example.WuyeGuanli.entity.RentalInfo;
 import com.example.WuyeGuanli.service.ifs.RentalInfoService;
 import com.example.WuyeGuanli.vo.RentalInfoRes;
@@ -43,21 +45,30 @@ public class RentalInfoController {
 
 	//
 
-	@PostMapping("rental/whorental")
+	@PostMapping("rental/whorental") // 對who_rental表增或改
 	public WhoRentalRes addWhoRental(@RequestBody WhoRentalRes whoRentalRes) {
 		rentalInfoService.addWhoRental(whoRentalRes);
-		return new WhoRentalRes(200, "增或改租借檔案成功",
-				whoRentalRes.getIdwhoRental(),
-				whoRentalRes.getRentalWhat(),
-				whoRentalRes.getAccountRental(), 
-				whoRentalRes.isReturnYorN(), 
-				whoRentalRes.isVerify(),
-				whoRentalRes.getChangeTime());
+		return new WhoRentalRes(200, "增或改租借檔案成功", whoRentalRes.getIdwhoRental(), whoRentalRes.getRentalWhat(),
+				whoRentalRes.getAccountRental(), whoRentalRes.isReturnYorN(), whoRentalRes.isVerify(),
+				whoRentalRes.getChangeTime(),0,"");
 	}
 
-	@DeleteMapping("rental/delete/whorental/{idwhorental}")
-	public RentalInfoRes deleteByWRPK(@PathVariable("idwhorental") int idwho_rental) {
+	@DeleteMapping("rental/delete/whorental/{idwhorental}") // 對who_rental表id刪除
+	public WhoRentalRes deleteByWRPK(@PathVariable("idwhorental") int idwho_rental) {
 		rentalInfoService.deleteByWRPK(idwho_rental);
-		return new RentalInfoRes(200, "刪除租借資訊成功");
+		return new WhoRentalRes(200, "刪除租借資訊成功");
+	}
+
+	@GetMapping("rental/whorentalinfo") // 連表對id查詢
+	public WhoRentalRes selectByWRPK(@RequestParam("idwho_rental") int idwho_rental) {
+	    WhoRentalRes result = rentalInfoService.selectByWRPK(idwho_rental);
+	    if (result == null) {
+	        return new WhoRentalRes(404, "找不到租借資訊");
+	    }
+	    return result;
+	}
+	@GetMapping("rental/whorentalallinfo") // 連表全查詢
+	public List<WhoRentalDTO> selectAllWR() {
+		return rentalInfoService.selectAllWR();
 	}
 }
