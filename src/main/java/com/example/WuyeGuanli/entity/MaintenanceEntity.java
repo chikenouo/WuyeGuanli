@@ -1,4 +1,4 @@
-package com.example.maintenance.entity;
+package com.example.WuyeGuanli.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
