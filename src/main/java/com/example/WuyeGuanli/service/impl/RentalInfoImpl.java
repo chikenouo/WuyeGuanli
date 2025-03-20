@@ -15,6 +15,8 @@ import com.example.WuyeGuanli.service.ifs.RentalInfoService;
 import com.example.WuyeGuanli.vo.RentalInfoRes;
 import com.example.WuyeGuanli.vo.WhoRentalRes;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class RentalInfoImpl implements RentalInfoService {
 
@@ -90,4 +92,14 @@ public class RentalInfoImpl implements RentalInfoService {
 		return whoRentalRepository.selectAllWhoRental();
 	}
 
+	@Override
+	@Transactional
+	public void verifyWhoRental(int idwho_rental, int inputAmount) {
+		try {
+			whoRentalRepository.verifyWhoRental(idwho_rental, inputAmount);
+		} catch (Exception e) {
+			throw new RuntimeException("驗證過程錯誤: " + e.getMessage());
+		}
+
+	}
 }

@@ -3,11 +3,13 @@ package com.example.WuyeGuanli.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,7 +52,7 @@ public class RentalInfoController {
 		rentalInfoService.addWhoRental(whoRentalRes);
 		return new WhoRentalRes(200, "增或改租借檔案成功", whoRentalRes.getIdwhoRental(), whoRentalRes.getRentalWhat(),
 				whoRentalRes.getAccountRental(), whoRentalRes.isReturnYorN(), whoRentalRes.isVerify(),
-				whoRentalRes.getChangeTime(),0,"");
+				whoRentalRes.getChangeTime(), 0, "");
 	}
 
 	@DeleteMapping("rental/delete/whorental/{idwhorental}") // 對who_rental表id刪除
@@ -61,14 +63,27 @@ public class RentalInfoController {
 
 	@GetMapping("rental/whorentalinfo") // 連表對id查詢
 	public WhoRentalRes selectByWRPK(@RequestParam("idwho_rental") int idwho_rental) {
-	    WhoRentalRes result = rentalInfoService.selectByWRPK(idwho_rental);
-	    if (result == null) {
-	        return new WhoRentalRes(404, "找不到租借資訊");
-	    }
-	    return result;
+		WhoRentalRes result = rentalInfoService.selectByWRPK(idwho_rental);
+		if (result == null) {
+			return new WhoRentalRes(404, "找不到租借資訊");
+		}
+		return result;
 	}
+
 	@GetMapping("rental/whorentalallinfo") // 連表全查詢
 	public List<WhoRentalDTO> selectAllWR() {
 		return rentalInfoService.selectAllWR();
+	}
+
+	@PutMapping("rental/verify")
+	public ResponseEntity<?> verifyWhoRental(@RequestParam("idwho_rental") int idwho_rental,
+			@RequestParam("inputAmount") int inputAmount) {
+
+		try {
+			rentalInfoService.verifyWhoRental(idwho_rental, inputAmount);
+			return ResponseEntity.ok("驗證成功！");
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body("驗證失敗: " + e.getMessage());
+		}
 	}
 }
