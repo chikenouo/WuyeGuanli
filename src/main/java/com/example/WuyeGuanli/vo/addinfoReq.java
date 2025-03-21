@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotNull;
 public class addinfoReq extends BasicRes {
 	@NotNull(message = "門牌不能為空")
 	private String partitionhousenumber;
-	@NotNull(message = "門牌不能為空")
+	@NotNull(message = "住戶名字不能為空")
 	private String owerName;
-	@NotNull(message = "門牌不能為空")
+	@NotNull(message = "住戶手機不能為空")
 	private String owerPhone;
-	@NotNull(message = "門牌不能為空")
+	@NotNull(message = "")
 	private boolean lease;
 
 	private String residentname;
