@@ -27,22 +27,25 @@ public class ResidentInformationServiceImpl implements ResidentInformationServic
 	@Transactional(rollbackOn = Exception.class)
 	@Override
 	public BasicRes addinfo(addinfoReq req) {
-
 		String patternString = "\\d{8}";
+		// 檢查房東名字
+		if (!StringUtils.hasText(req.getOwerName())) {
+			return new BasicRes(400, "住戶名字不能為空!");
+		}
 		// 檢查房東手機
-		if (req.getOwerPhone() == null) {
+		if (!StringUtils.hasText(req.getOwerPhone())) {
 			return new BasicRes(400, "房東手機號碼不能為空!");
 		}
 		if (!req.getOwerPhone().matches(patternString)) {
 			System.out.println(req.getOwerPhone());
 			System.out.println(req.getOwerPhone().matches(patternString));
 			System.out.println("手機號碼有誤");
-			return new BasicRes(400, " Phone Erro!");
+			return new BasicRes(400, "住戶手機號碼格式錯誤");
 		}
 		patternString = "[A-C]\\d{2}";
 		// 判斷門牌號碼
 		if (!req.getPartitionhousenumber().matches(patternString)) {
-			return new BasicRes(400, " getPartitionhousenumber Erro!");
+			return new BasicRes(400, "門牌格式錯誤");
 		}
 		// 判斷是否出租
 		if (req.isLease()) {
@@ -50,19 +53,23 @@ public class ResidentInformationServiceImpl implements ResidentInformationServic
 			if (!StringUtils.hasText(req.getResidentname())) 
 			{
 				System.out.println("租戶名字");
-				return new BasicRes(400, " Lease Name Erro!");
+				return new BasicRes(400, "租戶名字錯");
 			}
 			patternString = "\\d{8}";
 			// 檢查租戶手機
 			if (!StringUtils.hasText(req.getResidentphonenumber())|| req.getPartitionhousenumber().matches(patternString)) 
 			{
 				System.out.println("租戶手機");
-				return new BasicRes(400, "Lease Phone Erro!");
+				return new BasicRes(400, "租戶手機錯誤");
+			}
+			if (req.getOwerPhone() == req.getResidentphonenumber()) 
+			{
+				return new BasicRes(400, "租戶手機已註冊過");
 			}
 		}
 		residentDao.Add(req.getPartitionhousenumber(), req.getOwerName(), req.getOwerPhone(), req.isLease(),
 				req.getResidentname(), req.getResidentphonenumber());
-		return new BasicRes(200, "success");
+		return new BasicRes(200, "成功注入資料");
 	}
 
 	@Override
