@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-    @RequestMapping("/api/repairs")
+@RequestMapping("/api/repairs")
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class RepairController {
     
