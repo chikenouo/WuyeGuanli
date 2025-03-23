@@ -34,28 +34,31 @@ public class VisitorRecordsServiceImpl implements VisitorRecordsService {
 	@Override
 	public BasicRes addinfo(VisitorAddReq req) {
 		
+		if (!StringUtils.hasText(req.getVisitorName())) 
+		{
+			return new BasicRes(400, "名字不能為空");
+		}
 		String patternString = "\\d{10}";
 		// 檢查訪客手機
 		if (!req.getVisitorPhone().matches(patternString)) {
 			System.out.println(req.getVisitorPhone());
 			System.out.println(req.getVisitorPhone().matches(patternString));
 			System.out.println("手機號碼有誤");
-			return null;
+			return new BasicRes(400, "手機號碼有誤");
 		}
 		//檢查對象是否存在
 		String VisitorStr = req.getVisitors().substring(0,3);
 		Resident_Information resident_Information = residentDao.gatPartitionhousenumberByAll(VisitorStr);
 		if (resident_Information == null) {
-			System.out.println("查無此門牌");
-			return null;
+			System.out.println("查無此人");
+			return new BasicRes(400, "查無此人");
 		}
 		if (!StringUtils.hasText(resident_Information.getPartitionhousenumber()))
 		{
 			System.out.println("查無此門牌");
-			return null;
+			return new BasicRes(400, "查無此門牌");
 		}
 		VisitorStr = req.getVisitors().substring(4);
-		
 //		if (!resident_Information.isLease()) 
 //		{
 //			
@@ -74,10 +77,13 @@ public class VisitorRecordsServiceImpl implements VisitorRecordsService {
 //				return null;
 //			}
 //		}
-		
+		if ( !StringUtils.hasText(req.getVisitorReason()))
+		{
+			return new BasicRes(400, "原因不能為空");
+		}
 		System.out.println("成功");
 		visDao.Add(req.getVisitorName(),req.getVisitorPhone() ,req.getVisitorReason() , req.getVisitors());
-		return null;
+		 return new BasicRes(200, "成功");
 	}
 
 	@Override

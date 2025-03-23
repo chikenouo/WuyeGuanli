@@ -103,38 +103,47 @@ public class ResidentInformationServiceImpl implements ResidentInformationServic
 	{
 		String patternString = "\\d{8}";
 		Resident_Information res = residentDao.gatPartitionhousenumberByAll(req.getPartitionhousenumber());
+		if(!StringUtils.hasText(req.getOwerName()))
+		{
+			return new BasicRes(400, "房東名字不能為空!");
+		}
 		if(!StringUtils.hasText(res.getPartitionhousenumber()))
 		{
-			return null;
+			return new BasicRes(400, "門牌不能為空");
 		}
-		if (req.getOwerPhone() == null) {
+		if (!StringUtils.hasText(req.getOwerPhone())) {
 			return new BasicRes(400, "房東手機號碼不能為空!");
 		}
 		if (!req.getOwerPhone().matches(patternString)) {
 			System.out.println(req.getOwerPhone());
 			System.out.println(req.getOwerPhone().matches(patternString));
 			System.out.println("手機號碼有誤");
-			return null;
+			return new BasicRes(400, "手機號碼有誤");
 		}
 		patternString = "[A-C]\\d{2}";
 		// 判斷門牌號碼
 		if (!req.getPartitionhousenumber().matches(patternString)) {
-			return null;
+			return new BasicRes(400, "門牌格式錯誤");
 		}
 		// 判斷是否出租
 		if (req.isLease()) {
 			// 檢查租戶名字
 			if (!StringUtils.hasText(req.getResidentname())) {
-				return null;
+				return new BasicRes(400, "租戶名字不能為空");
 			}
 			// 檢查租戶手機
 			patternString = "\\d{8}";
 			if (!StringUtils.hasText(req.getResidentphonenumber())
 					|| req.getPartitionhousenumber().matches(patternString)) {
-				return null;
+				return new BasicRes(400, "租戶手機號碼錯誤");
+			}
+			if(req.getResidentphonenumber().equals(req.getOwerPhone()))
+			{
+			
+				return new BasicRes(400, "租戶手機號碼不能與房東相同");
 			}
 		}
 		residentDao.updateByPartitionhousenumber(req.getPartitionhousenumber(),req.getOwerName(),req.getOwerPhone(),req.isLease(),req.getResidentname(),req.getResidentphonenumber());
-		return null;
+		return new BasicRes(200, "成功");
 	}
 }
