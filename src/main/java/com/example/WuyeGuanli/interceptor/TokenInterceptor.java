@@ -23,7 +23,8 @@ public class TokenInterceptor implements HandlerInterceptor {
         "http://localhost:4200",
         "http://localhost:5173",
         "https://wallet-app-react-nu.vercel.app",
-            "https://noveres.github.io/fgbd/"
+            "https://noveres.github.io/fgbd/",
+            "https://project-wuye-ng.vercel.app"
     );
 
     // 哪些路徑需要完全放行（不需要驗證token）
