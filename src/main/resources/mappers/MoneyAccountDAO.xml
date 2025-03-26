@@ -40,13 +40,9 @@
 		SELECT
 		gm.receive_money_account AS receiveMoneyAccount,
 		gm.receive,
-		SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',
-		-1) AS address_remark,
-		SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^',
-		2), '^', -1) AS
-		feefor_remark,
-		SUBSTRING(gm.remark, LOCATE('^',
-		gm.remark, LOCATE('^', gm.remark) + 2) + 2) AS
+		SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '#', 2), '#',-1) AS address_remark,
+		SUBSTRING_INDEX(SUBSTRING_INDEX(gm.remark, '^', 2), '^', -1) AS feefor_remark,
+		SUBSTRING(gm.remark, LOCATE('^',gm.remark, LOCATE('^', gm.remark) + 2) + 2) AS
 		other_remark,
 		gm.time_of_receiving_money AS timeOfReceivingMoney,
 		gm.send_money_account AS sendMoneyAccount
