@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `resident_information` (
 
 -- 確保表格存在並創建
 CREATE TABLE IF NOT EXISTS `users` (
- 
+
 id INT AUTO_INCREMENT PRIMARY KEY,
 name VARCHAR(50) NOT NULL,
 identity_number VARCHAR(20),
